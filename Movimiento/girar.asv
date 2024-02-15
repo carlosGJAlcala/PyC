@@ -8,9 +8,9 @@ msg_vel.Angular.X=0.0;
 msg_vel.Angular.Y=0;
 ruta_seguida=[];
 if (th>=0)
-    msg_vel.Angular.Z=0.7;
+    msg_vel.Angular.Z=0.1;
 else
-    msg_vel.Angular.Z=-0.7;
+    msg_vel.Angular.Z=-0.1;
 end
 yaw=0.0;
 
