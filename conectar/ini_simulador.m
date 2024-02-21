@@ -1,6 +1,6 @@
 %% DECLARACIÓN DE SUBSCRIBERS
-% sub_odom=rossubscriber('/robot0/odom','nav_msgs/Odometry'); % Subscripción a la odometría 
-sub_odom=rossubscriber('/robot0/local_odom','nav_msgs/Odometry'); % Subscripción a la odometría 
+ sub_odom=rossubscriber('/robot0/odom','nav_msgs/Odometry'); % Subscripción a la odometría 
+% sub_odom=rossubscriber('/robot0/local_odom','nav_msgs/Odometry'); % Subscripción a la odometría 
 %Laser 
 sub_laser=rossubscriber('/robot0/laser_1','sensor_msgs/LaserScan');
 
