@@ -11,7 +11,8 @@ msg_vel.Linear.Z=0;
 % utilizará el valor Z)
 msg_vel.Angular.X=0;
 msg_vel.Angular.Y=0;
-msg_vel.Angular.Z=input('Introduzca la velocidad angular (rad/s): ');
+msg_vel.Angular.Z=0;
+%input('Introduzca la velocidad angular (rad/s): ');
 
 %Array para almacenar datos odometria
 ruta_seguida=[];
@@ -41,15 +42,7 @@ while(1)
     waitfor(r);
 end
 
-%% Probar eliminacion de datos duplicados por error de sensores
-ruta_filtrada = ruta_seguida(1);
-
-% Filtrar valores consecutivos iguales
-for i = 2:length(ruta_seguida)
-    if ruta_seguida(i) ~= ruta_seguida(i-1)
-        ruta_filtrada = [ruta_filtrada, ruta_seguida(i)];
-    end
-end
+ruta_filtrada = unique(ruta_seguida);
 
 %% Calculo entre medidas:
 % Diferencias entre elementos consecutivos
