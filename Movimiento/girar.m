@@ -7,10 +7,12 @@ msg_vel.Linear.Z=0;
 msg_vel.Angular.X=0.0;
 msg_vel.Angular.Y=0;
 ruta_seguida=[];
-if (th>=0)
-    msg_vel.Angular.Z=0.7;
-else
-    msg_vel.Angular.Z=-0.7;
+
+msg_vel.Angular.Z= input('Introduzca la velocidad angular (rad/s): ');
+
+if (th<0)
+    msg_vel.Angular.Z = msg_vel.Angular.Z * -1;
+
 end
 yaw=0.0;
 
@@ -48,3 +50,17 @@ while(1)
     lee_sensores;
     waitfor(r);
 end
+
+
+ruta_filtrada_angular = unique(ruta_seguida);
+
+%% Calculo entre medidas:
+% Diferencias entre elementos consecutivos
+diferencias_angular = diff(ruta_filtrada_angular);
+diferencia_minima_angular = min(diferencias_angular);
+disp(['La diferencia mínima entre elementos consecutivos es: ', num2str(diferencia_minima_angular)]);
+
+% Limpiar valor de arrays
+clear ruta_seguida
+clear diferencias_angular
+
