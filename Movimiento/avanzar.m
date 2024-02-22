@@ -1,4 +1,4 @@
-distancia=4.0;
+distancia=1.0;
 r=robotics.Rate(10);
 msg_vel.Linear.X=0.7;
 msg_vel.Linear.Y=0.0;
