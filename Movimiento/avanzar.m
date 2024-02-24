@@ -1,4 +1,4 @@
-distancia=1.0;
+distancia=2.0;
 r=robotics.Rate(10);
 
 % Velocidades lineales en x,y y z (velocidades en y o z no se usan en 

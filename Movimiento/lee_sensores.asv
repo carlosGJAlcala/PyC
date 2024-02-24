@@ -84,21 +84,20 @@ ylabel('Distancia (m)');
 end
 
 function resultado=IsParallel(num0,num1,num4,num5,num6,num7)
-margenError=0.05*5;
-anglesensor0=1.5708;
-anglesensor1=0.715585;
-anglesensor4=-1*anglesensor1;
-anglesensor5=-1*anglesensor0;
-anglesensor6=-2.53073;
-anglesensor7=-1*anglesensor6;
+anglesensor0=1.57;
+anglesensor1=0.71;
+anglesensor4=~anglesensor1;
+anglesensor5=~anglesensor0;
+anglesensor6=-2.53;
+anglesensor7=~anglesensor6;
 num1Fict=calculateHypotenuse(abs(anglesensor1-anglesensor0),num0);
 num7Fict=calculateHypotenuse(abs(anglesensor7-anglesensor0),num0);
-num4Fict=calculateHypotenuse(abs(anglesensor4-anglesensor5),num5);
-num6Fict=calculateHypotenuse(abs(anglesensor6-anglesensor5),num5);
-valeu1=(abs(num1-num1Fict)<margenError);
-valeu2=(abs(num7-num7Fict)<margenError);
-valeu3=(abs(num4-num4Fict)<margenError);
-valeu4=(abs(num6-num6Fict)<margenError);
+num4Fict=ncalculateHypotenuse(abs(anglesensor4-anglesensor5),num5);
+
+valeu1=(num1==calculateHypotenuse(abs(anglesensor1-anglesensor0),num0));
+valeu2=(num7==calculateHypotenuse(abs(anglesensor7-anglesensor0),num0));
+valeu3=(num4==calculateHypotenuse(abs(anglesensor4-anglesensor5),num5));
+valeu4=(num6==calculateHypotenuse(abs(anglesensor6-anglesensor5),num5));
 
 if valeu1 | valeu2 | valeu3| valeu4
     resultado=true;
