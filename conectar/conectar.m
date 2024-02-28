@@ -9,6 +9,6 @@
 
  %casa
 %ifconfig
-rosinit('http://192.168.1.42:11311','NodeHost','192.168.1.40')
+rosinit('http://192.168.1.41:11311','NodeHost','192.168.1.40')
 
 

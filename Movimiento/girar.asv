@@ -1,6 +1,16 @@
-th= datos_mov.angulo*(3.14/180);
+function resultado= girar(angulo,velocidad_angular,odom,sen,pubVel)
+sub_odom=odom;
+th= angulo*(3.14/180);
+
+msg_vel.Linear.X=0.0;
+msg_vel.Linear.Y=0.0;
+msg_vel.Linear.Z=0;
+msg_vel.Angular.X=0.0;
+msg_vel.Angular.Y=0;
 ruta_seguida=[];
-msg_vel.Angular.Z= datos_mov.VelocidadAngular;
+
+
+msg_vel.Angular.Z= velocidad_angular;
 
 if (th<0)
     msg_vel.Angular.Z = msg_vel.Angular.Z * -1;
@@ -43,6 +53,7 @@ while(1)
     waitfor(r);
 end
 
+
 ruta_filtrada_angular = unique(ruta_seguida);
 
 %% Calculo entre medidas:
@@ -55,3 +66,4 @@ disp(['La diferencia mínima entre elementos consecutivos es: ', num2str(diferen
 clear ruta_seguida
 clear diferencias_angular
 
+end
