@@ -1,5 +1,5 @@
-
-
+function avanzar(datos_mov)
+ini_simulador;
 lee_sensores;
 
 distancia=datos_mov.distancia;

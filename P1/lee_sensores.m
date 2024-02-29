@@ -20,7 +20,8 @@ plot(msg_laser,'MaximumRange',8);
 disp(sprintf('\tSONARES_0-7:%f %f %f %f %f %f %f %f',msg_sonar0.Range_,msg_sonar1.Range_,msg_sonar2.Range_,msg_sonar3.Range_,msg_sonar4.Range_,msg_sonar5.Range_,msg_sonar6.Range_,msg_sonar7.Range_));
 
 % resultadoMapa=codificacionLocalizacionLocal(msg_sonar0.Range_,msg_sonar1.Range_,msg_sonar2.Range_,msg_sonar3.Range_,msg_sonar4.Range_,msg_sonar5.Range_,msg_sonar6.Range_,msg_sonar7.Range_);
-%resultado1=muestrearMilMedidas(sub_sonar0);
+% vector=muestrearMilMedidas(sub_sonar0);
+% vectorsuavizado=mediamovil5(vector);
 % resultadoParalelo=IsParallel(msg_sonar0.Range_,msg_sonar1.Range_,msg_sonar4.Range_,msg_sonar5.Range_,msg_sonar6.Range_,msg_sonar7.Range_);
 
 
@@ -71,11 +72,12 @@ medidas_sonar0 = zeros(1, 1000);
 for i = 1:1000
     % Recoger la lectura actual del sonar 0
     % msg_sonar0 = receive(sub_sonar0, 10);
+   % msg_sonar0 = receive(sub_sonar0,10);
     msg_sonar0 = sub_sonar0.LatestMessage;
     % Guardar la distancia medida en el array
     medidas_sonar0(i) = msg_sonar0.Range_;
 end
-
+resultado=medidas_sonar0;
 % Representación gráfica de los datos del sonar 0
 plot(medidas_sonar0);
 title('Medidas de Distancia del Sonar 0');
@@ -113,6 +115,25 @@ function resultado=calculateHypotenuse(angle,side)
 resultado=side /cos(angle)
 
 end
+function resultado = mediamovil5(vector)
+vectort=zeros(1,1000);
+
+for i=6:1000
+    sumatorio = 0;
+
+    for j=1:5
+        sumatorio = sumatorio+vector(i-j);
+    end
+    vectort(i)=sumatorio/5;
+end
+resultado = vectort;
+figure;
+plot(resultado);
+title('Medidas de Distancia del Sonar 0 suave');
+xlabel('Número de Medida');
+ylabel('Distancia (m)');
+end
+
 
 
 

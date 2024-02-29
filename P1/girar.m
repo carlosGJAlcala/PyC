@@ -1,16 +1,9 @@
-function resultado= girar(angulo,velocidad_angular,odom,sen,pubVel)
-sub_odom=odom;
-th= angulo*(3.14/180);
-
-msg_vel.Linear.X=0.0;
-msg_vel.Linear.Y=0.0;
-msg_vel.Linear.Z=0;
-msg_vel.Angular.X=0.0;
-msg_vel.Angular.Y=0;
+function girar(datos_mov)
+ini_simulador;
+lee_sensores;
+th= datos_mov.angulo*(3.14/180);
 ruta_seguida=[];
-
-
-msg_vel.Angular.Z= velocidad_angular;
+msg_vel.Angular.Z= 0.3;
 
 if (th<0)
     msg_vel.Angular.Z = msg_vel.Angular.Z * -1;
@@ -49,10 +42,9 @@ while(1)
     else
         send(pub_vel,msg_vel);
     end
-    sen.leerSensor();
+    lee_sensores;
     waitfor(r);
 end
-
 
 ruta_filtrada_angular = unique(ruta_seguida);
 
@@ -65,5 +57,4 @@ disp(['La diferencia mínima entre elementos consecutivos es: ', num2str(diferen
 % Limpiar valor de arrays
 clear ruta_seguida
 clear diferencias_angular
-
 end
