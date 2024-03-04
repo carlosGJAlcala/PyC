@@ -151,7 +151,7 @@ else
     denominador=pendiente1;
     numerador=pendiente2;
 end
-resultado=1-numerador/denominador;
+resultado=1-(denominador-numerador)/denominador;
 end
 function resultado=IsParallel(num0,num1,num2,num3,num4,num5,num6,num7)
 pendientes=obtenerPendientes(num0,num1,num2,num3,num4,num5,num6,num7);
