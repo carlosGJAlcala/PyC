@@ -22,7 +22,7 @@ disp(sprintf('\tSONARES_0-7:%f %f %f %f %f %f %f %f',msg_sonar0.Range_,msg_sonar
 %  resultadoMapa=codificacionLocalizacionLocal(msg_sonar0.Range_,msg_sonar1.Range_,msg_sonar2.Range_,msg_sonar3.Range_,msg_sonar4.Range_,msg_sonar5.Range_,msg_sonar6.Range_,msg_sonar7.Range_);
 % vector=muestrearMilMedidas(sub_sonar0);
 %  vectorsuavizado=mediamovil5(vector);
-resultadoParalelo=IsParallel(msg_sonar0.Range_,msg_sonar1.Range_,msg_sonar2.Range_,msg_sonar3.Range_,msg_sonar4.Range_,msg_sonar5.Range_,msg_sonar6.Range_,msg_sonar7.Range_);
+ resultadoParalelo=IsParallel(msg_sonar0.Range_,msg_sonar1.Range_,msg_sonar2.Range_,msg_sonar3.Range_,msg_sonar4.Range_,msg_sonar5.Range_,msg_sonar6.Range_,msg_sonar7.Range_);
 
 
 
@@ -111,8 +111,8 @@ anglesensor7=-1*anglesensor6;
 
 sensor0X=0.076;
 sensor0Y=0.1;
-sensor0XR=num0*cos(anguloCono/2);
-sensor0YR=num0*sin(anguloCono/2);
+sensor0XR=num0*cos(anguloCono);
+sensor0YR=num0*sin(anguloCono);
 valt0=obtenerPuntosGlobal(anglesensor0,sensor0YR,sensor0XR,sensor0X,sensor0Y);
 punto0.x=valt0(1);
 punto0.y=valt0(2);
@@ -124,7 +124,7 @@ sensor1YR=num1*sin(anguloCono);
 valt1=obtenerPuntosGlobal(anglesensor1,sensor1YR,sensor1XR,sensor1X,sensor1Y);
 punto1.x=valt1(1);
 punto1.y=valt1(2);
-
+pendiente1=calcularPendiente(punto0,punto1);
 
 sensor2X=0.15;
 sensor2Y=0.03;
@@ -133,6 +133,7 @@ sensor2YR=num2*sin(anguloCono);
 valt2=obtenerPuntosGlobal(anglesensor2,sensor2YR,sensor2XR,sensor2X,sensor2Y);
 punto2.x=valt2(1);
 punto2.y=valt2(2);
+pendiente2=calcularPendiente(punto3,punto2);
 
 sensor3X=0.15;
 sensor3Y=-0.03;
@@ -149,17 +150,13 @@ sensor4YR=num4*sin(anguloCono);
 valt4=obtenerPuntosGlobal(anglesensor4,sensor4YR,sensor4XR,sensor4X,sensor4Y);
 punto4.x=valt4(1);
 punto4.y=valt4(2);
-
 sensor5X=0.076;
 sensor5Y=-0.1;
-sensor5XR=num5*cos(anguloCono/2);
-sensor5YR=num5*sin(anguloCono/2);
+sensor5XR=num5*cos(anguloCono);
+sensor5YR=num5*sin(anguloCono);
 valt5=obtenerPuntosGlobal(anglesensor5,sensor5YR,sensor5XR,sensor5X,sensor5Y);
 punto5.x=valt5(1);
 punto5.y=valt5(2);
-
-
-
 
 sensor6X=-0.14;
 sensor6Y=-0.058;
@@ -168,7 +165,6 @@ sensor6YR=num6*sin(anguloCono);
 valt6=obtenerPuntosGlobal(anglesensor6,sensor6YR,sensor6XR,sensor6X,sensor6Y);
 punto6.x=valt6(1);
 punto6.y=valt6(2);
-pendiente6=calcularPendiente(punto6,punto5);
 
 sensor7X=-0.14;
 sensor7Y=0.058;
@@ -178,17 +174,15 @@ valt7=obtenerPuntosGlobal(anglesensor7,sensor7YR,sensor7XR,sensor7X,sensor7Y);
 punto7.x=valt7(1);
 punto7.y=valt7(2);
 
-pendiente1=calcularPendiente(punto0,punto1);
-pendiente2=calcularPendiente(punto2,punto3);
-pendiente4=calcularPendiente(punto4,punto5);
-pendiente7=calcularPendiente(punto6,punto7);
-pendiente8=calcularPendiente(punto7,punto0);
 
-
-resultado=[pendiente1,pendiente2,pendiente4,pendiente6,pendiente7,pendiente8];
+value1=(((num1Fict-num1)/num1Fict));
+value2=(((num7Fict-num7)/num7Fict));
+value3=(((num4Fict-num4)/num4Fict));
+value4=(((num6Fict-num6)/num6Fict));
+resultado=mean([value1,value2,value3,value4]);
 end
 function resultado=calcularPendiente(punto1,punto2)
-resultado=(punto2.y-punto1.y)/(punto2.x-punto1.x);
+resultado=(punto1.x-punto2)/(punto1.y-punto2.y);
 end
 function resultado=obtenerPuntosGlobal(angulo,yr,xr,x,y )
 matrizrot=[cos(angulo),-sin(angulo);
@@ -196,7 +190,6 @@ matrizrot=[cos(angulo),-sin(angulo);
 
 resultado = (matrizrot*[xr;yr])+[x;y];
 end
-
 function resultado=calculateHypotenuse(angle,side)
 resultado=side /cos(angle)
 
