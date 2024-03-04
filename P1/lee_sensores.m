@@ -43,14 +43,14 @@ pendiente6=pendientes(6);
 pendiente7=pendientes(7);
 pendiente8=pendientes(8);
 vector=IsParallel(num0,num1,num2,num3,num4,num5,num6,num7);
-% gradoConfPared1=gradoConfianza(pendiente2,pendiente4);
-% gradoConfPared2=gradoConfianza(pendiente5,pendiente6);
-% gradoConfPared3=gradoConfianza(pendiente6,pendiente8);
-% gradoConfPared4=gradoConfianza(pendiente8,pendiente1);
-gradoConfPared1=vector(2);
-gradoConfPared2=vector(1);
-gradoConfPared3=vector(2);
-gradoConfPared4=vector(1);
+gradoConfPared1=gradoConfianza(pendiente2,pendiente4);
+gradoConfPared2=gradoConfianza(pendiente5,pendiente6);
+gradoConfPared3=gradoConfianza(pendiente6,pendiente8);
+gradoConfPared4=gradoConfianza(pendiente8,pendiente1);
+% gradoConfPared1=vector(2);
+% gradoConfPared2=vector(1);
+% gradoConfPared3=vector(2);
+% gradoConfPared4=vector(1);
 datos.gradoConfianza=[gradoConfPared4,gradoConfPared3,gradoConfPared2,gradoConfPared1];
 
 end
@@ -248,8 +248,9 @@ punto7.y=valt7(2);
 pendiente1=calcularPendiente(punto0,punto1);
 pendiente2=calcularPendiente(punto1,punto2);
 pendiente3=calcularPendiente(punto2,punto3);
-pendiente4=calcularPendiente(punto4,punto5);
-pendiente5=calcularPendiente(punto5,punto6);
+pendiente4=calcularPendiente(punto3,punto4);
+pendiente5=calcularPendiente(punto4,punto5);
+pendiente6=calcularPendiente(punto5,punto6);
 pendiente7=calcularPendiente(punto6,punto7);
 pendiente8=calcularPendiente(punto7,punto0);
 

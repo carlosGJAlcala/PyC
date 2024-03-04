@@ -19,10 +19,10 @@ plot(msg_laser,'MaximumRange',8);
 %Mostramos  lecturas del sonar
 % disp(sprintf('\tSONARES_0-7:%f %f %f %f %f %f %f %f',msg_sonar0.Range_,msg_sonar1.Range_,msg_sonar2.Range_,msg_sonar3.Range_,msg_sonar4.Range_,msg_sonar5.Range_,msg_sonar6.Range_,msg_sonar7.Range_));
 
-%  resultadoMapa=codificacionLocalizacionLocal(msg_sonar0.Range_,msg_sonar1.Range_,msg_sonar2.Range_,msg_sonar3.Range_,msg_sonar4.Range_,msg_sonar5.Range_,msg_sonar6.Range_,msg_sonar7.Range_);
+resultadoMapa=codificacionLocalizacionLocal(msg_sonar0.Range_,msg_sonar1.Range_,msg_sonar2.Range_,msg_sonar3.Range_,msg_sonar4.Range_,msg_sonar5.Range_,msg_sonar6.Range_,msg_sonar7.Range_);
 % vector=muestrearMilMedidas(sub_sonar0);
 %  vectorsuavizado=mediamovil5(vector);
-resultadoParalelo=IsParallel(msg_sonar0.Range_,msg_sonar1.Range_,msg_sonar2.Range_,msg_sonar3.Range_,msg_sonar4.Range_,msg_sonar5.Range_,msg_sonar6.Range_,msg_sonar7.Range_);
+ resultadoParalelo=IsParallel(msg_sonar0.Range_,msg_sonar1.Range_,msg_sonar2.Range_,msg_sonar3.Range_,msg_sonar4.Range_,msg_sonar5.Range_,msg_sonar6.Range_,msg_sonar7.Range_);
 
 function resultado=codificacionLocalizacionLocal(num0,num1,num2,num3,num4,num5,num6,num7)
 pared1=0;
@@ -31,7 +31,7 @@ pared3=0;
 pared4=0;
 datos.gradoConfianza=[];
 idCombinacional=identificacionCombinacional(num0,num1,num2,num3,num4,num5,num6,num7);
-datos.combinacionIdentificada=resultadoArray;
+datos.combinacionIdentificada=idCombinacional;
 if idCombinacional.numeroComb~=0
 pendientes=obtenerPendientes(num0,num1,num2,num3,num4,num5,num6,num7);
 pendiente1=pendientes(1);
@@ -41,9 +41,17 @@ pendiente4=pendientes(4);
 pendiente5=pendientes(5);
 pendiente6=pendientes(6);
 pendiente7=pendientes(7);
-
-
-else
+pendiente8=pendientes(8);
+vector=IsParallel(num0,num1,num2,num3,num4,num5,num6,num7);
+gradoConfPared1=gradoConfianza(pendiente2,pendiente4);
+gradoConfPared2=gradoConfianza(pendiente5,pendiente6);
+gradoConfPared3=gradoConfianza(pendiente6,pendiente8);
+gradoConfPared4=gradoConfianza(pendiente8,pendiente1);
+% gradoConfPared1=vector(2);
+% gradoConfPared2=vector(1);
+% gradoConfPared3=vector(2);
+% gradoConfPared4=vector(1);
+datos.gradoConfianza=[gradoConfPared4,gradoConfPared3,gradoConfPared2,gradoConfPared1];
 
 end
 
@@ -75,9 +83,11 @@ end
 if variable6==1|variable7==1
     pared3=1;
 end
-datos.arreglo=[pared4,pared3,pared2,pared1]
-
-dec=bin2dec(datos.arreglo);
+arreglo=[pared4,pared3,pared2,pared1];
+str_arreglo=num2str(arreglo);
+str_arreglo(isspace(str_arreglo)) = '';
+datos.arreglo=arreglo;
+dec=bin2dec(str_arreglo);
 if dec==3
    datos.numeroComb=5;
 elseif dec==4
@@ -129,27 +139,19 @@ xlabel('Número de Medida');
 ylabel('Distancia (m)');
 end
 
-function resultado=IsParallel2(num0,num1,num4,num5,num6,num7)
-anglesensor0=1.5708;
-anglesensor1=0.715585;
-anglesensor4=-1*anglesensor1;
-anglesensor5=-1*anglesensor0;
-anglesensor6=-2.53073;
-anglesensor7=-1*anglesensor6;
-
-num1Fict=calculateHypotenuse(abs(anglesensor1-anglesensor0),num0);
-num7Fict=calculateHypotenuse(abs(anglesensor7-anglesensor0),num0);
-num4Fict=calculateHypotenuse(abs(anglesensor4-anglesensor5),num5);
-num6Fict=calculateHypotenuse(abs(anglesensor6-anglesensor5),num5);
-
-value1=(((num1Fict-num1)/num1Fict));
-value2=(((num7Fict-num7)/num7Fict));
-value3=(((num4Fict-num4)/num4Fict));
-value4=(((num6Fict-num6)/num6Fict));
-resultado=mean([value1,value2,value3,value4]);
-end
 function resultado=gradoConfianza(pendiente1, pendiente2)
-resultado=(pendiente2-pendiente1)/pendiente2;
+numerador=0;
+denominador=0;
+pendiente1=abs(pendiente1);
+pendiente2=abs(pendiente2);
+if (pendiente1) <(pendiente2)
+    denominador=pendiente2;
+    numerador=pendiente1;
+else
+    denominador=pendiente1;
+    numerador=pendiente2;
+end
+resultado=1-(denominador-numerador)/denominador;
 end
 function resultado=IsParallel(num0,num1,num2,num3,num4,num5,num6,num7)
 pendientes=obtenerPendientes(num0,num1,num2,num3,num4,num5,num6,num7);
@@ -158,9 +160,10 @@ pendiente3=pendientes(3);
 pendiente5=pendientes(5);
 pendiente7=pendientes(7);
 gradoConf_LadosIzqDer=gradoConfianza(pendiente1,pendiente5);
-gradoConf_LadosDelanteAtras=gradoConfianza(pendiente3,pendiente7);
+gradoConf_LadosDelanteAtras=gradoConfianza(-1/pendiente3,-1/pendiente7);
 resultado=[gradoConf_LadosIzqDer,gradoConf_LadosDelanteAtras];
 end
+
 function resultado=obtenerPendientes(num0,num1,num2,num3,num4,num5,num6,num7)
 anguloCono=0.261799;
 anglesensor0=1.5708;
@@ -245,8 +248,9 @@ punto7.y=valt7(2);
 pendiente1=calcularPendiente(punto0,punto1);
 pendiente2=calcularPendiente(punto1,punto2);
 pendiente3=calcularPendiente(punto2,punto3);
-pendiente4=calcularPendiente(punto4,punto5);
-pendiente5=calcularPendiente(punto5,punto6);
+pendiente4=calcularPendiente(punto3,punto4);
+pendiente5=calcularPendiente(punto4,punto5);
+pendiente6=calcularPendiente(punto5,punto6);
 pendiente7=calcularPendiente(punto6,punto7);
 pendiente8=calcularPendiente(punto7,punto0);
 
