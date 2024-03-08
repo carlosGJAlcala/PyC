@@ -1,5 +1,6 @@
-function girar(datos_mov)
+function resultado=girar(datos_mov)
 ini_simulador;
+ini_robot;
 lee_sensores;
 th= datos_mov.angulo*(3.14/180);
 ruta_seguida=[];
@@ -53,7 +54,7 @@ ruta_filtrada_angular = unique(ruta_seguida);
 diferencias_angular = diff(ruta_filtrada_angular);
 diferencia_minima_angular = min(diferencias_angular);
 disp(['La diferencia mínima entre elementos consecutivos es: ', num2str(diferencia_minima_angular)]);
-
+resultado=abs(ang);
 % Limpiar valor de arrays
 clear ruta_seguida
 clear diferencias_angular

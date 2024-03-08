@@ -1,5 +1,6 @@
-function avanzar(datos_mov)
+function resultado=avanzar(datos_mov)
 ini_simulador;
+% ini_robot;
 lee_sensores;
 
 distancia=datos_mov.distancia;
@@ -53,7 +54,7 @@ ruta_filtrada = unique(ruta_seguida);
 diferencias = diff(ruta_filtrada);
 diferencia_minima = min(diferencias);
 disp(['La diferencia mínima entre elementos consecutivos es: ', num2str(diferencia_minima)]);
-
+resultado=dist;
 % Limpiar valor de arrays
 clear ruta_seguida
 clear diferencias
