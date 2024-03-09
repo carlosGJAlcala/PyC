@@ -25,7 +25,7 @@ msg_laser = sub_laser.LatestMessage;
 
 %variable para medir con el sonar con el laser, si se pone con uno mide con
 %los sonares, si se pone con 0 utiliza los laseres
-sonar=0;
+sonar=1;
 sensorAMedir=sub_laser;
 if sonar
     %sonares
@@ -95,10 +95,10 @@ end
 %partir de eso calcula la probabilidad que se encuentre en dicha casilla
 function resultado=gradoConfianza(pendientes, idcombinacional)
 
-pendienteIzq=pendientes(4);
-pendienteFrente=pendientes(1);
-pendienteDerecha=pendientes(2);
-pendienteAtras=pendientes(3);
+pendienteIzq=pendientes(1);
+pendienteFrente=pendientes(4);
+pendienteDerecha=pendientes(3);
+pendienteAtras=pendientes(2);
 
 porcentajePendienteAtras=0;
 porcentajePendienteDerecha=0;
@@ -106,18 +106,18 @@ porcentajePendienteFrente=0;
 porcentajePendienteIzq=0;
 if idcombinacional(1)
 
-      porcentajePendienteIzq= compararPendiente(1/pendienteIzq);
+      porcentajePendienteIzq= compararPendiente(pendienteIzq);
 end
 if idcombinacional(2)
-      porcentajePendienteAtras= compararPendiente(pendienteAtras);
+      porcentajePendienteAtras= compararPendiente(1/pendienteAtras);
 end
 if idcombinacional(3)
 
-    porcentajePendienteDerecha= compararPendiente(1/pendienteDerecha);
+    porcentajePendienteDerecha= compararPendiente(pendienteDerecha);
 
 end
 if idcombinacional(4)
-    porcentajePendienteFrente= compararPendiente(pendienteFrente);
+    porcentajePendienteFrente= compararPendiente(1/pendienteFrente);
 end
 resultado=(porcentajePendienteFrente+porcentajePendienteDerecha+porcentajePendienteAtras+porcentajePendienteIzq)/sum(idcombinacional);
 
@@ -152,18 +152,18 @@ if sonar
     pared3=0;
     pared4=variable0;
 
-    if variable2==1|variable3==1
+    if variable2==1&variable3==1
         pared1=1;
     end
 
-    if variable6==1|variable7==1
+    if variable6==1&variable7==1
         pared3=1;
     end
 else
-    pared1=variable0;
-    pared2=variable2;
-    pared3=variable4;
-    pared4=variable6;
+    pared1=variable2;
+    pared2=variable4;
+    pared3=variable6;
+    pared4=variable0;
 end
 arregloT=[pared4,pared3,pared2,pared1];
 datos.arreglo=arregloT;
