@@ -1,16 +1,3 @@
-
-
-%Lectura de sensores
-% msg_sonar0 = sub_sonar0.LatestMessage;
-% %msg_sonar0 = receive(sub_sonar0, 10);
-% msg_sonar1 = sub_sonar1.LatestMessage;
-% msg_sonar2 = sub_sonar2.LatestMessage;
-% msg_sonar3 = sub_sonar3.LatestMessage;
-% msg_sonar4 = sub_sonar4.LatestMessage;
-% msg_sonar5 = sub_sonar5.LatestMessage;
-% msg_sonar6 = sub_sonar6.LatestMessage;
-% msg_sonar7 = sub_sonar7.LatestMessage;
-
 msg_sonar0 = receive(sub_sonar0, 10);
 msg_sonar1 = receive(sub_sonar1, 10);
 msg_sonar2 = receive(sub_sonar2, 10);
@@ -19,16 +6,12 @@ msg_sonar4 = receive(sub_sonar4, 10);
 msg_sonar5 = receive(sub_sonar5, 10);
 msg_sonar6 = receive(sub_sonar6, 10);
 msg_sonar7 = receive(sub_sonar7, 10);
-
-%msg_laser
 msg_laser = sub_laser.LatestMessage;
 
-%variable para medir con el sonar con el laser, si se pone con uno mide con
-%los sonares, si se pone con 0 utiliza los laseres
+%sonar=1=>Mide Sonar, sonar=0=>Mide Laseres
 sonar=1;
 sensorAMedir=sub_laser;
 if sonar
-    %sonares
     distancia0=msg_sonar0.Range_;
     distancia1=msg_sonar1.Range_;
     distancia2=msg_sonar2.Range_;
@@ -40,8 +23,6 @@ if sonar
     disp(sprintf('\t distancias Sonar-7:%f %f %f %f %f %f %f %f',distancia0,distancia1,distancia2,distancia3,distancia4,distancia5,distancia6,distancia7));
     sensorAMedir=sub_sonar0;
 else
-    %para vamos a escoger del arreglo de ranges el que se corresponde por
-    %cada angulo de
     distancia0=msg_laser.Ranges(300);
     distancia1=msg_laser.Ranges(250);
     distancia2=msg_laser.Ranges(200);
@@ -52,10 +33,7 @@ else
     distancia7=msg_laser.Ranges(350);
     disp(sprintf('\t distancias Laser-7:%f %f %f %f %f %f %f %f',distancia0,distancia1,distancia2,distancia3,distancia4,distancia5,distancia6,distancia7));
 end
-%Representacion gráfica de los datos del laser.
 % plot(msg_laser,'MaximumRange',8);
-%Mostramos  lecturas del sonar
-
 resultadoMapa=codificacionLocalizacionLocal(distancia0,distancia1,distancia2,distancia3,distancia4,distancia5,distancia6,distancia7,sonar);
 
 %  vector=muestrearMilMedidas(sensorAMedir,sonar);
@@ -67,7 +45,8 @@ resultadoMapa=codificacionLocalizacionLocal(distancia0,distancia1,distancia2,dis
 %  vectorsuavizado=mediamovil5(vector);
 %resultadoParalelo=IsParallel(distancia0,distancia1,distancia2,distancia3,distancia4,distancia5,distancia6,distancia7,sonar);
 
-%Funcion que devuelve la codificación del numero de parededes identificadas
+%% Funcion codificacionLocalizacionLocal 
+% Devuelve la codificación del numero de parededes identificadas
 %y también devuelve el grado confianza de estas medidas
 function resultado=codificacionLocalizacionLocal(num0,num1,num2,num3,num4,num5,num6,num7,sonar)
 
@@ -87,7 +66,8 @@ if idCombinacional.numeroComb~=0
 end
 resultado=datos;
 end
-%Funcion que recibe como paramentros tanto un arreglo de pendiente como un
+%% Funcion Grado de confianza
+% Recibe como paramentros tanto un arreglo de pendiente como un
 %arreglo que indica la combinación de paredes en la que se encuentra, a
 %partir de eso calcula la probabilidad que se encuentre en dicha casilla
 function resultado=gradoConfianza(pendientes, idcombinacional)
@@ -119,6 +99,7 @@ end
 resultado=(porcentajePendienteFrente+porcentajePendienteDerecha+porcentajePendienteAtras+porcentajePendienteIzq)/sum(idcombinacional);
 
 end
+%% Función comparacion
 % Comparamos la pendiente obtenida con una pendiente de referencia, si se
 % parece darán un valor cercano a 1 , si no parecido a 0 , al ser
 % pendientes que se toman como si estuvieran en paralelo al robot, van ser
@@ -138,7 +119,7 @@ else
 end
 end
 
-
+%% función de identificacionCombinacional
 %función que devuelve la codificación de las paredes en un arreglo dicho
 %arreglo lo devolverá en el siguiente orden [paredIzquierda,paredAtras,paredDerecha,paredEnFrente]
 function resultadoArray=identificacionCombinacional(num0,num1,num2,num3,num4,num5,num6,num7,sonar)
@@ -176,7 +157,8 @@ datos.arreglo=arregloT;
 datos.numeroComb=deco(arregloT);
 resultadoArray=datos;
 end
-%funcion decodificadora, se le pasa un arreglo compuesto por las paredes y
+%% funcion decodificadora, 
+% Se le pasa un arreglo compuesto por las paredes y
 %devuelve un numero correspondiente a su codificación que viene el pdf de
 %la práctica 
 function resultado=deco(arreglo)
@@ -209,6 +191,7 @@ else
     resultado=dec;
 end
 end
+%% Función ResultadoToBinario
 % funcion que devuelve un uno si el sonar y el laser devuelven una
 % distancia menor a uno
 function resultadoToBinario=realToBinary(numeroReal)
@@ -220,6 +203,7 @@ else
 
 end
 end
+%% Función muestrearMilMedidas
 %función que muestra mil medidas ya sea del sensor o del sonar, esta
 %funcion tiene dos modos, modo sonar o modo sensor esto depende del segundo
 %parametro
@@ -236,7 +220,7 @@ end
 resultado=medidasSensor;
 end
 
-
+%% funcion IsParallel
 %fucnión que compara las pendientes un lado y de otro para medir si el
 %robot está en paralelo, está función tienes dos modo s uno con el modo
 %sonar y otro con el modo laser
@@ -250,6 +234,7 @@ gradoConf_LadosIzqDer= compararPendienteParalelas(1/pendiente1,1/pendiente5);
 gradoConf_LadosDelanteAtras=compararPendienteParalelas(pendiente3,pendiente7);
 resultado=[gradoConf_LadosIzqDer,gradoConf_LadosDelanteAtras];
 end
+%% función obtenerPendientes
 %Función que devuleve las pendiente a partir de de unas medidas hechas,
 %tiene dos modos un modo laser y otro modo sonar
 function resultado=obtenerPendientes(num0,num1,num2,num3,num4,num5,num6,num7,sonar)
@@ -417,10 +402,12 @@ datos=[pendiente1,pendiente2,pendiente3,pendiente4,pendiente5,pendiente6,pendien
 resultado=datos;
 
 end
+%% funcion calcularPendiente
 %función que implementa la formula de calcular la pendiente y2-y1/x2-x1
 function resultado=calcularPendiente(punto1,punto2)
 resultado=(punto2.y-punto1.y)/(punto2.x-punto1.x);
 end
+%% funcion obtenerPuntosGlobal
 %funcion que realiza la transformación de las cordenadas de los sensores a
 %las coordenadas del robot
 function resultado=obtenerPuntosGlobal(angulo,yr,xr,x,y )
@@ -429,7 +416,7 @@ matrizrot=[cos(angulo),-sin(angulo);
 
 resultado = (matrizrot*[xr;yr])+[x;y];
 end
-
+%% función mediamovil5
 %Media movil con ventana de 5 periodos, suaviza la funcion y quita el ruido
 function resultado = mediamovil5(vector)
 vectort=zeros(1,1000);

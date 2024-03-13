@@ -8,16 +8,10 @@ msg_vel.Angular.Z= datos_mov.VelocidadAngular;
 
 if (th<0)
     msg_vel.Angular.Z = msg_vel.Angular.Z * -1;
-
 end
 yaw=0.0;
-
-%Leemos la primera posicion
 initpos = sub_odom.LatestMessage.Pose.Pose.Position;
-%angulo
-% initori=sub_odom.LatestMessage.Pose.Pose.Orientation;
-% ang_euler=quat2eul([initori.W initori.X initori.Z]);
-% yawini=ang_euler(1);
+
 initori = sub_odom.LatestMessage.Pose.Pose.Orientation;
 ang_euler=quat2eul([initori.W initori.X initori.Y initori.Z]); 
 yawini=ang_euler(1);
@@ -50,12 +44,10 @@ end
 ruta_filtrada_angular = unique(ruta_seguida);
 
 %% Calculo entre medidas:
-% Diferencias entre elementos consecutivos
 diferencias_angular = diff(ruta_filtrada_angular);
 diferencia_minima_angular = min(diferencias_angular);
 disp(['La diferencia mínima entre elementos consecutivos es: ', num2str(diferencia_minima_angular)]);
 resultado=abs(ang);
-% Limpiar valor de arrays
 clear ruta_seguida
 clear diferencias_angular
 end
