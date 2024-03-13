@@ -58,5 +58,5 @@ resultado=dist;
 % Limpiar valor de arrays
 clear ruta_seguida
 clear diferencias
-
+end
 

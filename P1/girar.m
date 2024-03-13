@@ -1,10 +1,10 @@
 function resultado=girar(datos_mov)
 ini_simulador;
-ini_robot;
+% ini_robot;
 lee_sensores;
 th= datos_mov.angulo*(3.14/180);
 ruta_seguida=[];
-msg_vel.Angular.Z= 0.3;
+msg_vel.Angular.Z= datos_mov.VelocidadAngular;
 
 if (th<0)
     msg_vel.Angular.Z = msg_vel.Angular.Z * -1;

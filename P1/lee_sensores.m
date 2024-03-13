@@ -42,7 +42,6 @@ if sonar
 else
     %para vamos a escoger del arreglo de ranges el que se corresponde por
     %cada angulo de
-
     distancia0=msg_laser.Ranges(300);
     distancia1=msg_laser.Ranges(250);
     distancia2=msg_laser.Ranges(200);
@@ -54,19 +53,19 @@ else
     disp(sprintf('\t distancias Laser-7:%f %f %f %f %f %f %f %f',distancia0,distancia1,distancia2,distancia3,distancia4,distancia5,distancia6,distancia7));
 end
 %Representacion gráfica de los datos del laser.
-%plot(msg_laser,'MaximumRange',8);
+% plot(msg_laser,'MaximumRange',8);
 %Mostramos  lecturas del sonar
 
 resultadoMapa=codificacionLocalizacionLocal(distancia0,distancia1,distancia2,distancia3,distancia4,distancia5,distancia6,distancia7,sonar);
 
-% vector=muestrearMilMedidas(sensorAMedir,sonar);
-% plot(vector);
-% title('Medidas de Distancia  0');
-% xlabel('Número de Medida');
-% ylabel('Distancia (m)');
-
-% vectorsuavizado=mediamovil5(vector);
-% resultadoParalelo=IsParallel(distancia0,distancia1,distancia2,distancia3,distancia4,distancia5,distancia6,distancia7,sonar);
+%  vector=muestrearMilMedidas(sensorAMedir,sonar);
+%  plot(vector);
+%  title('Medidas de Distancia  0');
+%  xlabel('Número de Medida');
+%  ylabel('Distancia (m)');
+% 
+%  vectorsuavizado=mediamovil5(vector);
+%resultadoParalelo=IsParallel(distancia0,distancia1,distancia2,distancia3,distancia4,distancia5,distancia6,distancia7,sonar);
 
 %Funcion que devuelve la codificación del numero de parededes identificadas
 %y también devuelve el grado confianza de estas medidas
@@ -85,9 +84,7 @@ if idCombinacional.numeroComb~=0
     gradoConfPared=gradoConfianza(pendientes,idCombinacional.arreglo)
 
     datos.gradoConfianza=gradoConfPared;
-
 end
-
 resultado=datos;
 end
 %Funcion que recibe como paramentros tanto un arreglo de pendiente como un
@@ -131,8 +128,17 @@ end
 function resultado= compararPendiente(pendiente)
 pendienteRef=0+1;
 resultado= (pendienteRef)/(abs(pendiente)+1);
-
 end
+
+function resultado= compararPendienteParalelas(pendiente, pendiente2)
+if abs(pendiente) > abs(pendiente2)
+    resultado= abs(pendiente2)/(abs(pendiente));
+else
+    resultado= abs(pendiente)/(abs(pendiente2));
+end
+end
+
+
 %función que devuelve la codificación de las paredes en un arreglo dicho
 %arreglo lo devolverá en el siguiente orden [paredIzquierda,paredAtras,paredDerecha,paredEnFrente]
 function resultadoArray=identificacionCombinacional(num0,num1,num2,num3,num4,num5,num6,num7,sonar)
@@ -206,7 +212,7 @@ end
 % funcion que devuelve un uno si el sonar y el laser devuelven una
 % distancia menor a uno
 function resultadoToBinario=realToBinary(numeroReal)
-if(numeroReal<1.5)
+if(numeroReal<1.7)
     resultadoToBinario= 1;
 
 else
@@ -227,7 +233,7 @@ for i = 1:1000
         medidasSensor(i) = msg_sensor.Ranges(100);
     end
 end
-resultado=medidas_sonar0;
+resultado=medidasSensor;
 end
 
 
@@ -240,8 +246,8 @@ pendiente1=pendientes(1);
 pendiente3=pendientes(3);
 pendiente5=pendientes(5);
 pendiente7=pendientes(7);
-gradoConf_LadosIzqDer=gradoConfianza(pendiente1,pendiente5);
-gradoConf_LadosDelanteAtras=gradoConfianza(-1/pendiente3,-1/pendiente7);
+gradoConf_LadosIzqDer= compararPendienteParalelas(1/pendiente1,1/pendiente5);
+gradoConf_LadosDelanteAtras=compararPendienteParalelas(pendiente3,pendiente7);
 resultado=[gradoConf_LadosIzqDer,gradoConf_LadosDelanteAtras];
 end
 %Función que devuleve las pendiente a partir de de unas medidas hechas,
