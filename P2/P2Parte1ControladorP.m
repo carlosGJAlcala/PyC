@@ -52,8 +52,8 @@ while (1)
         
         msg_vel.Angular.X=0;
         msg_vel.Angular.Y=0;
-        msg_vel.Angular.Z= consigna_vel_ang;
-        if (consigna_vel_ang > 0.5)
+        msg_vel.Angular.Z= abs(consigna_vel_ang);
+        if (abs(consigna_vel_ang) > 0.5)
             msg_vel.Angular.Z= 0.5;
         end
     else
