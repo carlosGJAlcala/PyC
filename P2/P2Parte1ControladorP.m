@@ -4,8 +4,8 @@ setenv('ROS_IP','192.168.1.141');
 rosinit() % Inicialización de ROS en la IP correspondiente
 %% DECLARACIÓN DE VARIABLES NECESARIAS PARA EL CONTROL
 
-x_destino = input('Introduzca coordenada destino X: ')
-y_destino = input('Introduzca coordenada destino Y: ')
+x_destino = input('Introduzca coordenada destino X: ');
+y_destino = input('Introduzca coordenada destino Y: ');
 
 % Ganancias de los controladores P
 Kp_distancia = 1; % Ganancia proporcional para el error de distancia
