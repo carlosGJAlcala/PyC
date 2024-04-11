@@ -1,7 +1,4 @@
-%% INICIALIZACIÓN DE ROS (COMPLETAR ESPACIOS CON LAS DIRECCIONES IP)
-setenv('ROS_MASTER_URI','http://192.168.1.149:11311');
-setenv('ROS_IP','192.168.1.141');
-rosinit() % Inicialización de ROS en la IP correspondiente
+conectar
 %% DECLARACIÓN DE VARIABLES NECESARIAS PARA EL CONTROL
 MAX_TIME = 1000; %% Numero máximo de iteraciones
 medidas = zeros(5,1000);
@@ -31,6 +28,9 @@ dist = 0;
 lastpos = zeros(1,2); 
 lastdist = 0;
 lastdistav = 0;
+lastpos.X = lastpos.X-1;
+lastpos.Y = lastpos.Y-1;
+lastdist = msg_sonar0.Range_ - 0.1;
 %% Bucle de control
 while (1)
     i = i + 1;
@@ -45,9 +45,19 @@ while (1)
     end
     
     dist = msg_sonar0.Range_;
-    if dist>5
-        dist = 5;
+if dist>5
+ dist = lastdist-0.05;
+ Eori = Eori_ant;
+else
+    Eori = atan2((dist-lastdist),distav);
+    if Eori < -pi
+        Eori = Eori + (2*pi); 
     end
+    if Eori > pi
+        Eori = Eori - (2*pi);
+    end
+end
+Eori_ant = Eori;
     %% Calculamos el error de distancia y orientación
 
     if distav > 0 
@@ -74,7 +84,16 @@ while (1)
     if (Edist<0.01) && (Eori<0.01)
         break;
     end
-    %% Aplicamos consignas de control
+    %% Ap
+    % if(abs(Edist) < 2)
+    consigna_vel_ang = Eori * 0.3 + Edist * 0.07;
+
+if(abs(Edist) < 0.4)
+    consigna_vel_ang = Eori * 0.4 + Edist * 0.9; 
+end
+if(abs(Edist) < 0.1)
+    consigna_vel_ang = Eori * 0.4 + Edist * 1.5; 
+endlicamos consignas de control
     msg_vel.Linear.X= consigna_vel_linear;
     msg_vel.Linear.Y=0;
     msg_vel.Linear.Z=0;
@@ -96,6 +115,7 @@ while (1)
         break;
     end
 end
+end
 save('medidas.mat','medidas');
 %% DESCONEXIÓN DE ROS
-rosshutdown;
+desconectar;

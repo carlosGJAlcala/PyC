@@ -1,7 +1,4 @@
-%% INICIALIZACIÓN DE ROS (COMPLETAR ESPACIOS CON LAS DIRECCIONES IP)
-setenv('ROS_MASTER_URI','http://192.168.1.149:11311');
-setenv('ROS_IP','192.168.1.141');
-rosinit() % Inicialización de ROS en la IP correspondiente
+conectar;
 %% DECLARACIÓN DE VARIABLES NECESARIAS PARA EL CONTROL
 
 x_destino = input('Introduzca coordenada destino X: ');
@@ -28,6 +25,11 @@ end
 %% Umbrales para condiciones de parada del robot
 umbral_distancia = 0.5;
 umbral_angulo = 0.1;
+%% Variables para plotear
+vel_l = [];
+vel_a = [];
+error_l = [];
+error_a = [];
 %% Bucle de control infinito
 while (1)
     %% Obtenemos la posición y orientación actuales
@@ -37,15 +39,17 @@ while (1)
     yaw=yaw(1);
     %% Calculamos el error de distancia
     Edist = sqrt((x_destino - pos.X)^2 + (y_destino - pos.Y)^2);
+    error_l=[error_l,Edist];
     %% Calculamos el error de orientación
     angulo_destino = atan2(y_destino - pos.Y, x_destino - pos.X);
     Eori = angulo_destino - yaw;
-
+    error_a=[error_a,Eori];
     %% Asignamos valores de consigna
     consigna_vel_ang =Kp_angulo * Eori;
     consigna_vel_linear =Kp_distancia * Edist;
     %% 1º Orientar correctamente al robot
     if (abs(Eori) > umbral_angulo)
+        vel_a=[vel_a,consigna_vel_ang];
         msg_vel.Linear.X=0;
         msg_vel.Linear.Y=0;
         msg_vel.Linear.Z=0;
@@ -57,6 +61,7 @@ while (1)
             msg_vel.Angular.Z= 0.5;
         end
     else
+        vel_l=[vel_l,msg_vel.Linear.X];
         %% 2º Desplazar al amigobot
         msg_vel.Linear.X=consigna_vel_linear;
         if (consigna_vel_linear > 1)
@@ -89,5 +94,19 @@ while (1)
     % Temporización del bucle según el parámetro establecido en r
     waitfor(r);
 end
-%% DESCONEXIÓN DE ROS
-rosshutdown;
+%% Plots
+figure;
+nexttile
+plot(error_a);
+title("Error de orientación");
+nexttile
+plot(error_l);
+title("Error de distancia");
+nexttile
+plot(vel_l);
+title("Velocidad Lineal");
+nexttile
+plot(vel_a);
+title('Velocidad Angular');
+desconectar;
+
