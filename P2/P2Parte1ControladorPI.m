@@ -13,16 +13,26 @@ Ki_angulo = 0.05;
 dt = 0.1; % 10 Hz de frecuencia de muestreo
 
 %% DECLARACIÓN DE SUBSCRIBERS
-odom = rossubscriber('/robot0/odom'); % Subscripción a la odometría
+%odom = rossubscriber('/robot0/odom'); % Subscripción a la odometría
+odom=rossubscriber('/pose');
+
+pub_enable= rospublisher('/cmd_motor_state','std_msgs/Int32');
+msg_enable_motor=rosmessage(pub_enable);
+msg_enable_motor.Data=1;
+send(pub_enable,msg_enable_motor);
+
 %% DECLARACIÓN DE PUBLISHERS
-pub = rospublisher('/robot0/cmd_vel', 'geometry_msgs/Twist'); %
+%pub = rospublisher('/robot0/cmd_vel', 'geometry_msgs/Twist'); %
+pub = rospublisher('/cmd_vel', 'geometry_msgs/Twist');
+
 msg_vel=rosmessage(pub); %% Creamos un mensaje del tipo declarado en"pub" (geometry_msgs/Twist)
 %% Definimos la perodicidad del bucle (10 hz)
 r = robotics.Rate(10);
 waitfor(r);
 pause(3); %% Esperamos entre 2 y 5 segundos antes de leer el primer mensaje para aseguramos que empiezan a llegar mensajes.
 %% Nos aseguramos recibir un mensaje relacionado con el robot
-while (strcmp(odom.LatestMessage.ChildFrameId,'robot0')~=1)
+%while (strcmp(odom.LatestMessage.ChildFrameId,'robot0')~=1)
+while (strcmp(odom.LatestMessage.ChildFrameId,'base_link')~=1)
     odom.LatestMessage
 end
 %% Umbrales para condiciones de parada del robot
