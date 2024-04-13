@@ -1,4 +1,4 @@
-conectar
+conectar;
 %% DECLARACIÓN DE VARIABLES NECESARIAS PARA EL CONTROL
 MAX_TIME = 1000; %% Numero máximo de iteraciones
 medidas = zeros(5,1000);
@@ -28,8 +28,7 @@ dist = 0;
 lastpos = zeros(1,2); 
 lastdist = 0;
 lastdistav = 0;
-lastpos.X = lastpos.X-1;
-lastpos.Y = lastpos.Y-1;
+Eori_ant=0;
 lastdist = msg_sonar0.Range_ - 0.1;
 %% Bucle de control
 while (1)
