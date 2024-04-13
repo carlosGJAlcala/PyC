@@ -40,6 +40,11 @@ umbral_distancia = 0.5;
 umbral_angulo = 0.1;
 %% Bucle de control infinito
 suma_error_ori = 0;
+%% Variables para plotear
+vel_lineal = [];
+vel_angular = [];
+error_lineal = [];
+error_angular = [];
 while (1)
     %% Obtenemos la posición y orientación actuales
     pos=odom.LatestMessage.Pose.Pose.Position;
@@ -48,11 +53,12 @@ while (1)
     yaw=yaw(1);
     %% Calculamos el error de distancia
     Edist = sqrt((x_destino - pos.X)^2 + (y_destino - pos.Y)^2);
-    
+    error_lineal=[error_lineal,Edist];
     %% Calculamos el error de orientación
     angulo_destino = atan2(y_destino - pos.Y, x_destino - pos.X);
     Eori = angulo_destino - yaw;
     suma_error_ori = suma_error_ori + Eori * dt;
+    error_angular=[error_angular,Eori];
 
     %% Asignamos valores de consigna
     consigna_vel_linear = Kp_distancia * Edist;
@@ -60,6 +66,7 @@ while (1)
 
     %% 1º Orientar correctamente al robot
     if (abs(Eori) > umbral_angulo)
+        vel_angular=[vel_angular,consigna_vel_ang];
         msg_vel.Linear.X=0;
         msg_vel.Linear.Y=0;
         msg_vel.Linear.Z=0;
@@ -72,6 +79,7 @@ while (1)
         end
     else
         %% 2º Desplazar al amigobot
+        vel_lineal=[vel_lineal,msg_vel.Linear.X];
         msg_vel.Linear.X=consigna_vel_linear;
         if (consigna_vel_linear > 1)
             msg_vel.Linear.X= 1;
@@ -103,4 +111,18 @@ while (1)
     % Temporización del bucle según el parámetro establecido en r
     waitfor(r);
 end
+%% Plots
+figure;
+nexttile
+plot(error_angular);
+title("Error de orientación");
+nexttile
+plot(error_lineal);
+title("Error de distancia");
+nexttile
+plot(vel_lineal);
+title("Velocidad Lineal");
+nexttile
+plot(vel_angular);
+title('Velocidad Angular');
 desconectar;

@@ -1,10 +1,10 @@
-conectar
+conectar;
 %% DECLARACIÓN DE VARIABLES NECESARIAS PARA EL CONTROL
 MAX_TIME = 1000; %% Numero máximo de iteraciones
 medidas = zeros(5,1000);
 Kp_dist = 1;
 Kp_ori = 0.1;
-D = 1; %Distancia de separacion pared en metros 
+D = 1; %Distancia de separacion pared en metros
 
 %% DECLARACIÓN DE SUBSCRIBERS
 odom = rossubscriber('/robot0/odom'); % Subscripción a la odometría
@@ -33,15 +33,17 @@ while (strcmp(odom.LatestMessage.ChildFrameId,'robot0')~=1)
 end
 %% Inicializamos variables para el control
 i = 0;
-pos = zeros(1,2);
-dist = 0;
-lastpos = zeros(1,2); 
-lastdist = 0;
-lastdistav = 0;
-lastpos.X = lastpos.X-1;
-lastpos.Y = lastpos.Y-1;
-lastdist = msg_sonar0.Range_ - 0.1;
+pos = odom.LatestMessage.Pose.Pose.Position;
+dist = msg_sonar0.Range_;
+lastpos = pos;
+lastdist = dist;
+lastdistav = 0.01;
 %% Bucle de control
+%% Variables para plotear
+vel_lineal = [];
+vel_angular = [];
+error_lineal = [];
+error_angular = [];
 while (1)
     i = i + 1;
     %% Obtenemos la posición y medidas de sonar
@@ -53,26 +55,17 @@ while (1)
     else
         distav = 0;
     end
-    
+
     dist = msg_sonar0.Range_;
-if dist>5
- dist = lastdist-0.05;
- Eori = Eori_ant;
-else
-    Eori = atan2((dist-lastdist),distav);
-    if Eori < -pi
-        Eori = Eori + (2*pi); 
+    if dist>5
+        dist = 5;
     end
-    if Eori > pi
-        Eori = Eori - (2*pi);
-    end
-end
-Eori_ant = Eori;
     %% Calculamos el error de distancia y orientación
 
     Eori = atan2(dist-lastdist, distav);
-
+    error_angular=[error_angular,Eori];
     Edist = (dist + 0.105)*cos(Eori) - D;
+    error_lineal=[error_lineal,Edist];
 
     medidas(1,i)= dist;
     medidas(2,i)= lastdist; %% valor anterior de distancia
@@ -80,24 +73,12 @@ Eori_ant = Eori;
     medidas(4,i)= Eori;
     medidas(5,i)= Edist;
     %% Calculamos las consignas de velocidades
-    consigna_vel_linear = 0.3;          
+    consigna_vel_linear = 0.3;
     consigna_vel_ang = Kp_dist * Edist + Kp_ori * Eori;
-    
+    %% Aplicamos consignas de control
+   vel_lineal=[vel_lineal,consigna_vel_linear];
+   vel_angular=[vel_angular,consigna_vel_ang];
 
-    %% Condición de parada
-    if (Edist<0.01) && (Eori<0.01)
-        break;
-    end
-    %% Ap
-    % if(abs(Edist) < 2)
-    consigna_vel_ang = Eori * 0.3 + Edist * 0.07;
-
-if(abs(Edist) < 0.4)
-    consigna_vel_ang = Eori * 0.4 + Edist * 0.9; 
-end
-if(abs(Edist) < 0.1)
-    consigna_vel_ang = Eori * 0.4 + Edist * 1.5; 
-endlicamos consignas de control
     msg_vel.Linear.X= consigna_vel_linear;
     msg_vel.Linear.Y=0;
     msg_vel.Linear.Z=0;
@@ -119,7 +100,23 @@ endlicamos consignas de control
         break;
     end
 end
-end
 save('medidas.mat','medidas');
 %% DESCONEXIÓN DE ROS
+msg_vel.Linear.X= 0;
+msg_vel.Angular.Z= 0;
+send(pub,msg_vel);
+%% Plots
+figure;
+nexttile
+plot(error_angular);
+title("Error de orientación");
+nexttile
+plot(error_lineal);
+title("Error de distancia");
+nexttile
+plot(vel_lineal);
+title("Velocidad Lineal");
+nexttile
+plot(vel_angular);
+title('Velocidad Angular');
 desconectar;
