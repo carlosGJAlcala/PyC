@@ -1,3 +1,5 @@
+function resultadoMapa=lee_sensores()
+ini_simulador;
 msg_sonar0 = receive(sub_sonar0, 10);
 msg_sonar1 = receive(sub_sonar1, 10);
 msg_sonar2 = receive(sub_sonar2, 10);
@@ -35,7 +37,7 @@ else
 end
 % plot(msg_laser,'MaximumRange',8);
 resultadoMapa=codificacionLocalizacionLocal(distancia0,distancia1,distancia2,distancia3,distancia4,distancia5,distancia6,distancia7,sonar);
-
+end
 %  vector=muestrearMilMedidas(sensorAMedir,sonar);
 %  plot(vector);
 %  title('Medidas de Distancia  0');

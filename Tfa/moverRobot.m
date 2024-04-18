@@ -1,22 +1,20 @@
 function resultado= moverRobot(x,y)
+ini_simulador;
 % DECLARACIÓN DE VARIABLES NECESARIAS PARA EL CONTROL
 x_destino =x;
-y_destino = input('Introduzca coordenada destino Y: ');
-Ganancias de los controladores P e I
+y_destino = y;
+% Ganancias de los controladores P e I
 Kp_distancia = 1;
 Kp_angulo = 0.5;
 Ki_angulo = 0.05;
 
-ini_simulador;
-% Definimos la perodicidad del bucle (10 hz)
+% Definir el intervalo de muestreo (dt), basado en la frecuencia de su ciclo de control
+dt = 0.1; % 10 Hz de frecuencia de muestreo
 r = robotics.Rate(10);
 waitfor(r);
 pause(3); %% Esperamos entre 2 y 5 segundos antes de leer el primer mensaje para aseguramos que empiezan a llegar mensajes.
 % Nos aseguramos recibir un mensaje relacionado con el robot
-while (strcmp(odom.LatestMessage.ChildFrameId,'robot0')~=1)
-while (strcmp(odom.LatestMessage.ChildFrameId,'base_link')~=1)
-    odom.LatestMessage
-end
+
 % Umbrales para condiciones de parada del robot
 umbral_distancia = 0.5;
 umbral_angulo = 0.1;
@@ -29,8 +27,8 @@ error_lineal = [];
 error_angular = [];
 while (1)
     % Obtenemos la posición y orientación actuales
-    pos=odom.LatestMessage.Pose.Pose.Position;
-    ori=odom.LatestMessage.Pose.Pose.Orientation;
+    pos=sub_odom.LatestMessage.Pose.Pose.Position;
+    ori=sub_odom.LatestMessage.Pose.Pose.Orientation;
     yaw=quat2eul([ori.W ori.X ori.Y ori.Z]);
     yaw=yaw(1);
     % Calculamos el error de distancia
@@ -87,10 +85,10 @@ while (1)
         send(pub,msg_vel);
         break;
     else
-        send(pub,msg_vel);
+        send(pub_vel,msg_vel);
     end
 
-    Temporización del bucle según el parámetro establecido en r
+    % Temporización del bucle según el parámetro establecido en r
     waitfor(r);
 end
 % Plots
