@@ -1,10 +1,12 @@
 conectar;
 %% DECLARACIÓN DE VARIABLES NECESARIAS PARA EL CONTROL
-MAX_TIME = 1000; %% Numero máximo de iteraciones
+MAX_TIME = 500; %% Numero máximo de iteraciones
 medidas = zeros(5,1000);
 Kp_dist = 1;
 Kp_ori = 0.1;
-D = 1; %Distancia de separacion pared en metros
+D = 1;
+velociadadLineal=0.8;
+%Distancia de separacion pared en metros
 
 %% DECLARACIÓN DE SUBSCRIBERS
 odom = rossubscriber('/robot0/odom'); % Subscripción a la odometría
@@ -44,6 +46,7 @@ vel_lineal = [];
 vel_angular = [];
 error_lineal = [];
 error_angular = [];
+distancia = [];
 while (1)
     i = i + 1;
     %% Obtenemos la posición y medidas de sonar
@@ -73,12 +76,12 @@ while (1)
     medidas(4,i)= Eori;
     medidas(5,i)= Edist;
     %% Calculamos las consignas de velocidades
-    consigna_vel_linear = 0.3;
+    consigna_vel_linear = velociadadLineal;
     consigna_vel_ang = Kp_dist * Edist + Kp_ori * Eori;
     %% Aplicamos consignas de control
-   vel_lineal=[vel_lineal,consigna_vel_linear];
-   vel_angular=[vel_angular,consigna_vel_ang];
-
+    vel_lineal=[vel_lineal,consigna_vel_linear];
+    vel_angular=[vel_angular,consigna_vel_ang];
+    distancia=[distancia,Edist];
     msg_vel.Linear.X= consigna_vel_linear;
     msg_vel.Linear.Y=0;
     msg_vel.Linear.Z=0;
@@ -101,10 +104,7 @@ while (1)
     end
 end
 save('medidas.mat','medidas');
-%% DESCONEXIÓN DE ROS
-msg_vel.Linear.X= 0;
-msg_vel.Angular.Z= 0;
-send(pub,msg_vel);
+
 %% Plots
 figure;
 nexttile
@@ -114,8 +114,8 @@ nexttile
 plot(error_lineal);
 title("Error de distancia");
 nexttile
-plot(vel_lineal);
-title("Velocidad Lineal");
+plot(distancia);
+title("Distancia");
 nexttile
 plot(vel_angular);
 title('Velocidad Angular');
