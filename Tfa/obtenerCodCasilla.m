@@ -1,14 +1,7 @@
-function resultadoMapa=lee_sensores()
+%% Devuelve un array con la codificación de las paredes en el sentido de las aujas del reloj 
+function resultadoMapa=obtenerCodCasilla()
 ini_simulador;
-msg_sonar0 = receive(sub_sonar0, 10);
-msg_sonar1 = receive(sub_sonar1, 10);
-msg_sonar2 = receive(sub_sonar2, 10);
-msg_sonar3 = receive(sub_sonar3, 10);
-msg_sonar4 = receive(sub_sonar4, 10);
-msg_sonar5 = receive(sub_sonar5, 10);
-msg_sonar6 = receive(sub_sonar6, 10);
-msg_sonar7 = receive(sub_sonar7, 10);
-msg_laser = sub_laser.LatestMessage;
+leerSensores;
 
 %sonar=1=>Mide Sonar, sonar=0=>Mide Laseres
 sonar=1;
@@ -22,7 +15,7 @@ if sonar
     distancia5=msg_sonar5.Range_;
     distancia6=msg_sonar6.Range_;
     distancia7=msg_sonar7.Range_;
-    disp(sprintf('\t distancias Sonar-7:%f %f %f %f %f %f %f %f',distancia0,distancia1,distancia2,distancia3,distancia4,distancia5,distancia6,distancia7));
+    % disp(sprintf('\t distancias Sonar-7:%f %f %f %f %f %f %f %f',distancia0,distancia1,distancia2,distancia3,distancia4,distancia5,distancia6,distancia7));
     sensorAMedir=sub_sonar0;
 else
     distancia0=msg_laser.Ranges(300);
@@ -33,10 +26,11 @@ else
     distancia5=msg_laser.Ranges(50);
     distancia6=msg_laser.Ranges(400);
     distancia7=msg_laser.Ranges(350);
-    disp(sprintf('\t distancias Laser-7:%f %f %f %f %f %f %f %f',distancia0,distancia1,distancia2,distancia3,distancia4,distancia5,distancia6,distancia7));
+    % disp(sprintf('\t distancias Laser-7:%f %f %f %f %f %f %f %f',distancia0,distancia1,distancia2,distancia3,distancia4,distancia5,distancia6,distancia7));
 end
 % plot(msg_laser,'MaximumRange',8);
-resultadoMapa=codificacionLocalizacionLocal(distancia0,distancia1,distancia2,distancia3,distancia4,distancia5,distancia6,distancia7,sonar);
+resultado=codificacionLocalizacionLocal(distancia0,distancia1,distancia2,distancia3,distancia4,distancia5,distancia6,distancia7,sonar);
+resultadoMapa=resultado.combinacionIdentificada.arreglo;
 end
 %  vector=muestrearMilMedidas(sensorAMedir,sonar);
 %  plot(vector);
@@ -62,7 +56,7 @@ if idCombinacional.numeroComb~=0
     pendienteDerecha=pendientes(5);
     pendienteAtras=pendientes(7);
     pendientes=[pendienteIzq,pendienteAtras,pendienteDerecha,pendienteFrente];
-    gradoConfPared=gradoConfianza(pendientes,idCombinacional.arreglo)
+    gradoConfPared=gradoConfianza(pendientes,idCombinacional.arreglo);
 
     datos.gradoConfianza=gradoConfPared;
 end
@@ -414,7 +408,7 @@ end
 %las coordenadas del robot
 function resultado=obtenerPuntosGlobal(angulo,yr,xr,x,y )
 matrizrot=[cos(angulo),-sin(angulo);
-    sin(angulo),cos(angulo)]
+    sin(angulo),cos(angulo)];
 
 resultado = (matrizrot*[xr;yr])+[x;y];
 end

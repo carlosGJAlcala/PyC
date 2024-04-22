@@ -5,7 +5,7 @@ x_destino =x;
 y_destino = y;
 % Ganancias de los controladores P e I
 Kp_distancia = 1;
-Kp_angulo = 0.5;
+Kp_angulo = 0.8;
 Ki_angulo = 0.05;
 
 % Definir el intervalo de muestreo (dt), basado en la frecuencia de su ciclo de control
@@ -82,7 +82,7 @@ while (1)
         msg_vel.Angular.Y=0;
         msg_vel.Angular.Z=0;
 
-        send(pub,msg_vel);
+        send(pub_vel,msg_vel);
         break;
     else
         send(pub_vel,msg_vel);
