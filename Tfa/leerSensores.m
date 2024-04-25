@@ -7,3 +7,6 @@ msg_sonar5 = receive(sub_sonar5, 10);
 msg_sonar6 = receive(sub_sonar6, 10);
 msg_sonar7 = receive(sub_sonar7, 10);
 msg_laser = sub_laser.LatestMessage;
+
+pos=sub_odom.LatestMessage.Pose.Pose.Position;
+ori=sub_odom.LatestMessage.Pose.Pose.Orientation;

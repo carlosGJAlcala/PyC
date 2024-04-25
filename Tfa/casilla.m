@@ -66,22 +66,19 @@ classdef casilla
             arriba=obj.codParedes(1);
             if(~derecha)
                 nuevacasilla=casilla([obj.Coordenadas(1)+2,obj.Coordenadas(2)])
-                nuevacasilla=nuevacasilla.calcularResistencia(dst);
+             
                 obj=obj.addCasillaHija(nuevacasilla);
             end
             if(~abajo)
                 nuevacasilla=casilla([obj.Coordenadas(1),obj.Coordenadas(2)-2])
-                nuevacasilla=nuevacasilla.calcularResistencia(dst);
                 obj=obj.addCasillaHija(nuevacasilla);
             end
             if(~izq)
                 nuevacasilla=casilla([obj.Coordenadas(1)-2,obj.Coordenadas(2)])
-                nuevacasilla=nuevacasilla.calcularResistencia(dst);
                 obj=obj.addCasillaHija(nuevacasilla);
             end
             if(~arriba)
                 nuevacasilla=casilla([obj.Coordenadas(1),obj.Coordenadas(2)+2])
-                nuevacasilla=nuevacasilla.calcularResistencia(dst);
                 obj=obj.addCasillaHija(nuevacasilla);
             end
 

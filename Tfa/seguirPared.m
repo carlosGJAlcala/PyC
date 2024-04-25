@@ -1,4 +1,4 @@
-function resultado= seguirParedDerecha
+function resultado= seguirPared
 % DECLARACIÓN DE VARIABLES NECESARIAS PARA EL CONTROL
 MAX_TIME = 1000; %% Numero máximo de iteraciones
 kp_dist=[1,0.7,0.7,];

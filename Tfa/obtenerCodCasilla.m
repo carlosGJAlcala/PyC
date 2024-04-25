@@ -1,4 +1,4 @@
-%% Devuelve un array con la codificación de las paredes en el sentido de las aujas del reloj 
+%% Devuelve un array con la codificación de las paredes en el sentido de las aujas del reloj
 function resultadoMapa=obtenerCodCasilla()
 ini_simulador;
 leerSensores;
@@ -37,11 +37,11 @@ end
 %  title('Medidas de Distancia  0');
 %  xlabel('Número de Medida');
 %  ylabel('Distancia (m)');
-% 
+%
 %  vectorsuavizado=mediamovil5(vector);
 %resultadoParalelo=IsParallel(distancia0,distancia1,distancia2,distancia3,distancia4,distancia5,distancia6,distancia7,sonar);
 
-%% Funcion codificacionLocalizacionLocal 
+%% Funcion codificacionLocalizacionLocal
 % Devuelve la codificación del numero de parededes identificadas
 %y también devuelve el grado confianza de estas medidas
 function resultado=codificacionLocalizacionLocal(num0,num1,num2,num3,num4,num5,num6,num7,sonar)
@@ -79,10 +79,10 @@ porcentajePendienteFrente=0;
 porcentajePendienteIzq=0;
 if idcombinacional(1)
 
-      porcentajePendienteIzq= compararPendiente(pendienteIzq);
+    porcentajePendienteIzq= compararPendiente(pendienteIzq);
 end
 if idcombinacional(2)
-      porcentajePendienteAtras= compararPendiente(1/pendienteAtras);
+    porcentajePendienteAtras= compararPendiente(1/pendienteAtras);
 end
 if idcombinacional(3)
 
@@ -101,7 +101,7 @@ end
 % pendientes que se toman como si estuvieran en paralelo al robot, van ser
 % pendientes cercanas a cero y la pendiente de referencia se toma como idealmente cero,
 % por lo tanto para no tener que evaluar valor de 0/0 sumamos un uno tanto a la pendiente
-% de referencia como a la pendiente a medir 
+% de referencia como a la pendiente a medir
 function resultado= compararPendiente(pendiente)
 pendienteRef=0+1;
 resultado= (pendienteRef)/(abs(pendiente)+1);
@@ -118,7 +118,24 @@ end
 %% función de identificacionCombinacional
 %función que devuelve la codificación de las paredes en un arreglo dicho
 %arreglo lo devolverá en el siguiente orden [paredIzquierda,paredAtras,paredDerecha,paredEnFrente]
+
+% function resultadoArray=identificacionCombinacionalGlobal(num0,num1,num2,num3,num4,num5,num6,num7,sonar)
+% puntos=obtenerPuntosGlobales(num0,num1,num2,num3,num4,num5,num6,num7);
+% posRobot.X=sub_odom.LatestMessage.Pose.Pose.Position.X;
+% posRobot.Y=sub_odom.LatestMessage.Pose.Pose.Position.Y;
+% 
+%     pared1=variable2;
+%     pared2=variable4;
+%     pared3=variable6;
+%     pared4=variable0;
+% end
+% arregloT=[pared4,pared3,pared2,pared1];
+% datos.arreglo=arregloT;
+% datos.numeroComb=deco(arregloT);
+% resultadoArray=datos;
+% end
 function resultadoArray=identificacionCombinacional(num0,num1,num2,num3,num4,num5,num6,num7,sonar)
+
 variable0=realToBinary(num0);
 variable1=realToBinary(num1);
 variable2=realToBinary(num2);
@@ -153,10 +170,10 @@ datos.arreglo=arregloT;
 datos.numeroComb=deco(arregloT);
 resultadoArray=datos;
 end
-%% funcion decodificadora, 
+%% funcion decodificadora,
 % Se le pasa un arreglo compuesto por las paredes y
 %devuelve un numero correspondiente a su codificación que viene el pdf de
-%la práctica 
+%la práctica
 function resultado=deco(arreglo)
 str_arreglo=num2str(arreglo);
 str_arreglo(isspace(str_arreglo)) = '';
@@ -233,6 +250,102 @@ end
 %% función obtenerPendientes
 %Función que devuleve las pendiente a partir de de unas medidas hechas,
 %tiene dos modos un modo laser y otro modo sonar
+function resultado= obtenerPuntosGlobales(num0,num1,num2,num3,num4,num5,num6,num7)
+anguloCono=0.261799;
+anglesensor0=1.5708;
+anglesensor1=0.715585;
+anglesensor2=0.261799;
+anglesensor3=-0.261799;
+anglesensor4=-1*anglesensor1;
+anglesensor5=-1*anglesensor0;
+anglesensor6=-2.53073;
+anglesensor7=-1*anglesensor6;
+
+sensor0X=0.076;
+sensor0Y=0.1;
+
+sensor0XR=num0*cos(anguloCono/2);
+sensor0YR=num0*sin(anguloCono/2);
+
+sensor1X=0.125;
+sensor1Y=0.075;
+sensor1XR=num1*cos(anguloCono);
+sensor1YR=num1*sin(anguloCono);
+sensor2X=0.15;
+sensor2Y=0.03;
+sensor2XR=num2*cos(anguloCono);
+sensor2YR=num2*sin(anguloCono);
+sensor3X=0.15;
+sensor3Y=-0.03;
+
+
+sensor3XR=num3*cos(anguloCono);
+sensor3YR=num3*sin(anguloCono);
+sensor4X=0.125;
+sensor4Y=-0.075;
+
+sensor4XR=num4*cos(anguloCono);
+sensor4YR=num4*sin(anguloCono);
+sensor5X=0.076;
+sensor5Y=-0.1;
+sensor5XR=num5*cos(anguloCono/2);
+sensor5YR=num5*sin(anguloCono/2);
+
+sensor6X=-0.14;
+sensor6Y=-0.058;
+
+sensor6XR=num6*cos(anguloCono);
+sensor6YR=num6*sin(anguloCono);
+sensor7X=-0.14;
+sensor7Y=0.058;
+
+sensor7XR=num7*cos(anguloCono);
+sensor7YR=num7*sin(anguloCono);
+
+valt0=obtenerPuntosGlobal(anglesensor0,sensor0YR,sensor0XR,sensor0X,sensor0Y);
+punto0.x=valt0(1);
+punto0.y=valt0(2);
+
+
+valt1=obtenerPuntosGlobal(anglesensor1,sensor1YR,sensor1XR,sensor1X,sensor1Y);
+punto1.x=valt1(1);
+punto1.y=valt1(2);
+
+
+
+
+valt2=obtenerPuntosGlobal(anglesensor2,sensor2YR,sensor2XR,sensor2X,sensor2Y);
+punto2.x=valt2(1);
+punto2.y=valt2(2);
+
+
+valt3=obtenerPuntosGlobal(anglesensor3,sensor3YR,sensor3XR,sensor3X,sensor3Y);
+punto3.x=valt3(1);
+punto3.y=valt3(2);
+
+valt4=obtenerPuntosGlobal(anglesensor4,sensor4YR,sensor4XR,sensor4X,sensor4Y);
+punto4.x=valt4(1);
+punto4.y=valt4(2);
+
+
+
+valt5=obtenerPuntosGlobal(anglesensor5,sensor5YR,sensor5XR,sensor5X,sensor5Y);
+punto5.x=valt5(1);
+punto5.y=valt5(2);
+
+
+valt6=obtenerPuntosGlobal(anglesensor6,sensor6YR,sensor6XR,sensor6X,sensor6Y);
+punto6.x=valt6(1);
+punto6.y=valt6(2);
+pendiente6=calcularPendiente(punto6,punto5);
+
+
+valt7=obtenerPuntosGlobal(anglesensor7,sensor7YR,sensor7XR,sensor7X,sensor7Y);
+punto7.x=valt7(1);
+punto7.y=valt7(2);
+resultado= [punto1,punto2,punto3,punto4,punto5,punto6,punto7];
+
+end
 function resultado=obtenerPendientes(num0,num1,num2,num3,num4,num5,num6,num7,sonar)
 
 
