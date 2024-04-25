@@ -32,7 +32,7 @@ end
 resultado=codificacionLocalizacionLocal(distancia0,distancia1,distancia2,distancia3,distancia4,distancia5,distancia6,distancia7,sonar);
 resultadoMapa=resultado.combinacionIdentificada.arreglo;
 end
-%  vector=muestrearMilMedidas(sensorAMedir,sonar);
+%  vector=muestrearMilMedidas(sensorAMedir, sonar);
 %  plot(vector);
 %  title('Medidas de Distancia  0');
 %  xlabel('Número de Medida');

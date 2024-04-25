@@ -1,8 +1,8 @@
 function resultado= seguirParedDerecha
 % DECLARACIÓN DE VARIABLES NECESARIAS PARA EL CONTROL
-MAX_TIME = 500; %% Numero máximo de iteraciones
+MAX_TIME = 1000; %% Numero máximo de iteraciones
 kp_dist=[1,0.7,0.7,];
-Kp_ori=[0.4,0.4,0.4,0.4];
+Kp_ori=[0.4,0.4,0.4];
 
 D = [0.5,0.7,2];
 distancia_parada=0.01;
