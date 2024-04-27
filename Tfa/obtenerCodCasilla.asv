@@ -118,7 +118,7 @@ end
 %% función de identificacionCombinacional
 %función que devuelve la codificación de las paredes en un arreglo dicho
 %arreglo lo devolverá en el siguiente orden [paredIzquierda,paredAtras,paredDerecha,paredEnFrente]
-function resultado=obtenerangulo(vector)
+function resultado=angulo(vector)
 if vector.x==0
     resultado=pi/2;
 else
@@ -148,10 +148,8 @@ end
 %%relativa del robot
 
 function resultadoArray=identificacionCombinacionalGlobal(num0,num1,num2,num3,num4,num5,num6,num7,sonar)
-ini_simulador;
-leerSensores;
 
-variable0=realToBinary(num0)*num0;
+variable0=*num0;
 variable1=realToBinary(num1)*num1;
 variable2=realToBinary(num2)*num2;
 variable3=realToBinary(num3)*num3;
@@ -161,16 +159,14 @@ variable6=realToBinary(num6)*num5;
 variable7=realToBinary(num7)*num6;
 
 puntos=obtenerPuntosGlobales(variable0,variable1,variable2,variable3,variable4,variable5,variable6,variable7);
+vector=hallarVector(puntos.punto1.x,puntos1.)
 resultado=identificacionCombinacional(num0,num1,num2,num3,num4,num5,num6,num7,sonar);
 datos=resultado.arreglo;
-
+puntosTemp;
 punto.x=sub_odom.LatestMessage.Pose.Pose.Position.X;
 punto.y=sub_odom.LatestMessage.Pose.Pose.Position.Y;
+puntosTemp=[punto]
 
-vector=puntos(1).x;
-vector=puntos(1).y;
-angulo=obtenerangulo(vector);
-numrot=hallarNumeroRot(angulo);
 pared1=variable2;
 pared2=variable4;
 pared3=variable6;
@@ -296,7 +292,6 @@ end
 %% función obtenerPendientes
 %Función que devuleve las pendiente a partir de de unas medidas hechas,
 %tiene dos modos un modo laser y otro modo sonar
-%%TODO
 function resultado= obtenerPuntosGlobales(num0,num1,num2,num3,num4,num5,num6,num7)
 anguloCono=0.261799;
 anglesensor0=1.5708;
@@ -567,9 +562,6 @@ end
 %funcion que realiza la transformación de las cordenadas de los sensores a
 %las coordenadas del robot
 function resultado=obtenerPuntosGlobal(angulo,yr,xr,x,y )
-ini_simulador;
-x=x+sub_odom.LatestMessage.Pose.Pose.Position.X;
-y=y+sub_odom.LatestMessage.Pose.Pose.Position.Y;
 matrizrot=[cos(angulo),-sin(angulo);
     sin(angulo),cos(angulo)];
 

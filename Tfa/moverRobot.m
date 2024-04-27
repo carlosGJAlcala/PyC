@@ -67,6 +67,7 @@ while (1)
     % Comprobamos umbrales
     if (Edist<umbral_distancia) && (abs(Eori)<umbral_angulo)
         stop;
+        recuperarPos(angulo_destino);
         break;
     else
         send(pub_vel,msg_vel);
