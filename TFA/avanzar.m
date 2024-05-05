@@ -10,17 +10,19 @@ distancia_total = 0; % Variable para acumular la distancia avanzada
 distancia_pared = 1;
 distancia_avanzar = 2;
 Kp_dist = 1;
-Kp_ori = 0.2;
+Kp_ori = 0.15;
 
 %% DECLARACIÓN DE SUBSCRIBERS
 odom = rossubscriber('/robot0/odom'); % Subscripción a la odometría
 sonar0 = rossubscriber('/robot0/sonar_0', rostype.sensor_msgs_Range);
+sonar5 = rossubscriber('/robot0/sonar_5', rostype.sensor_msgs_Range);
 pub = rospublisher('/robot0/cmd_vel', 'geometry_msgs/Twist'); %
 
 
 %% DECLARACIÓN DE PUBLISHERS
 msg_vel=rosmessage(pub); %% Creamos un mensaje del tipo declarado en "pub" (geometry_msgs/Twist)
 msg_sonar0=rosmessage(sonar0);
+msg_sonar5= rosmessage(sonar5);
 %% Definimos la periodicidad del bucle (10 hz)
 r = robotics.Rate(10);
 waitfor(r);
@@ -34,6 +36,8 @@ i = 0;
 pos = odom.LatestMessage.Pose.Pose.Position;
 dist = msg_sonar0.Range_;
 distav = 0;
+dist_aux = msg_sonar5.Range_;
+
 
 lastpos = pos;
 lastdist = dist;
@@ -56,9 +60,16 @@ while (distancia_total < distancia_avanzar && i < MAX_TIME)
 
     dist = msg_sonar0.Range_;
     if dist>5
-        dist = 5;
+%         dist_aux = recive(sonar5);
+%         if dist_aux < 5 
+%             dist=dist_aux;
+%         else
+            dist=5;
+%         end       
     end
-    %% Calculamos el error de distancia y orientación
+   
+
+ %% Calculamos el error de distancia y orientación
 
     Eori = atan2(dist-lastdist, distav);
     Edist = (dist + 0.105)*cos(Eori) - distancia_pared;
@@ -67,10 +78,17 @@ while (distancia_total < distancia_avanzar && i < MAX_TIME)
     consigna_vel_linear = 0.3;
     consigna_vel_ang = Kp_dist * Edist + Kp_ori * Eori;
 
-    if dist > 1.5 
-        consigna_vel_ang = 0;
+
+
+    if dist > 1.5
+%         if dist_aux < 1.5
+%             dist=dist_aux;
+%         else
+            consigna_vel_ang = 0;
+%         end        
     end
 
+    
     %% Aplicamos consignas de control
 
     msg_vel.Linear.X= consigna_vel_linear;

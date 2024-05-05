@@ -1,9 +1,10 @@
 function resultado=girar(angulo_giro)
     ini_simulador;
     lee_sensores;
-    th= angulo_giro*(3.14/180);
+    th = 0.00;
+    th= angulo_giro*(pi/180);
     msg_vel.Angular.Z= 0.6;
-    if (th<0)
+    if (th<0.00)
         msg_vel.Angular.Z = msg_vel.Angular.Z * -1;
     end
     yaw=0.0;

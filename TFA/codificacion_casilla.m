@@ -255,7 +255,7 @@ end
 % funcion que devuelve un uno si el sonar y el laser devuelven una
 % distancia menor a uno
 function resultadoToBinario=realToBinary(numeroReal)
-if(numeroReal<1.5)
+if(numeroReal<1.4)
     resultadoToBinario= 1;
 
 else

@@ -62,7 +62,7 @@ end
 
 
 function recorrerMapa(BEP)
-
+lastSalida = 0;
 lastBack = 0;
 % Ejemplo de cómo usar obtenerTop
 while ~BEP.estaVacia()
@@ -86,12 +86,15 @@ while ~BEP.estaVacia()
             if ~BEP.estaVacia()
                 BEP.desenpilar();                
             end
+            
         end
         lastBack = 1;
     else
-        if lastBack
+        if lastBack && ~lastSalida
             girar(90);
             girar(90);
+            lastBack = 0;
+            lastSalida =0;
         end
 
         % evaluar direccion destino
@@ -112,13 +115,31 @@ while ~BEP.estaVacia()
         if isempty(nuevas_dir)
             casilla_actual.setEsFinalRama();
         else
-            %if all(nuevas_dir,1)
-            %pdt analizar para marcar la salida
-            %else
-            %end
+            %Comprobar si tiene 3 caminos libres, si es asi, esta sera la
+            %salida
+            comprobarEsSalida = 0;
+            for i = 1:length(nuevas_dir)
+                if nuevas_dir{i} == "norte"
+                    comprobarEsSalida = comprobarEsSalida+ 1;
+                end
+                if nuevas_dir{i} == "este"
+                    comprobarEsSalida = comprobarEsSalida+1;
+                end
+                if nuevas_dir{i} == "oeste"
+                    comprobarEsSalida = comprobarEsSalida+1;
+                end
+            end
             
-            casilla_actual.agregarConexiones(nuevas_dir);
-            BEP.enpilarConexiones(casilla_actual);
+            if comprobarEsSalida == 3 
+                casilla_actual.setEsSalida();
+                casilla_actual.setEsFinalRama();
+                casilla_actual.setVisitada();
+                lastSalida = 1;
+                BEP.enpilar(casilla_actual);
+            else
+                casilla_actual.agregarConexiones(nuevas_dir);
+                BEP.enpilarConexiones(casilla_actual);
+            end           
         end  
         lastBack = 0;
     end    
