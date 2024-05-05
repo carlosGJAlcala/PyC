@@ -10,7 +10,7 @@ distancia_total = 0; % Variable para acumular la distancia avanzada
 distancia_pared = 1;
 distancia_avanzar = 2;
 Kp_dist = 1;
-Kp_ori = 0.1;
+Kp_ori = 0.2;
 
 %% DECLARACIÓN DE SUBSCRIBERS
 odom = rossubscriber('/robot0/odom'); % Subscripción a la odometría

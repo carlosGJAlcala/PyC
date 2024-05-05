@@ -62,23 +62,38 @@ end
 
 
 function recorrerMapa(BEP)
-direcciones = {'oeste', 'sur', 'este', 'norte'}; 
 
+lastBack = 0;
 % Ejemplo de cómo usar obtenerTop
 while ~BEP.estaVacia()
     % Obtener la casilla en el tope de la pila sin desenpilar
     casilla_actual = BEP.obtenerTop();
-    
+    nuevas_dir = [];
     %Si ya esta visitada, es que estamos realizando backtracking
     if casilla_actual.getVisitada()
-        % recorrer sentido contrario a su destino
-        destino_back = casilla_actual.getDireccionDestino();
-        %dir_back = obtenerDireccionOpuesta(destino_back)
-        realizarMovimientoBackTracking(destino_back);
-
-        % eliminar de la pila
-
+        if casilla_actual.getEsFinalRama()
+            destino_back = casilla_actual.getDireccionDestino();
+            realizarMovimientoBackTrackingFinRama(destino_back);
+            %Como es final de rama, prepara backtracking especial solo para
+            %este caso
+            if ~BEP.estaVacia()
+                BEP.desenpilar();                
+            end
+        else
+            % recorrer sentido contrario a su destino
+            destino_back = casilla_actual.getDireccionDestino();
+            realizarMovimientoBackTracking(destino_back);
+            if ~BEP.estaVacia()
+                BEP.desenpilar();                
+            end
+        end
+        lastBack = 1;
     else
+        if lastBack
+            girar(90);
+            girar(90);
+        end
+
         % evaluar direccion destino
         destino = casilla_actual.getDireccionDestino();
         %realizar movimiento
@@ -92,28 +107,21 @@ while ~BEP.estaVacia()
         % Controlar para no añadir como direccion libre la direccion de donde proviene
         direccionProveniente = obtenerDireccionOpuesta(casilla_actual.DireccionDestino);
         nuevas_dir = nuevas_dir(~strcmp(nuevas_dir, direccionProveniente));
-        
         casilla_actual.setVisitada();
-    end
 
-
-    if isempty(nuevas_dir)       
-
-        % No hay direcciones disponibles, hacer backtracking
-        BEP.desenpilar();  % Solo desenpilar cuando no hay otras opciones
-    else
-
-        %if all(nuevas_dir,1)
-        
+        if isempty(nuevas_dir)
+            casilla_actual.setEsFinalRama();
+        else
+            %if all(nuevas_dir,1)
             %pdt analizar para marcar la salida
-        %else
-
-        %end
-        % Procesar nuevas direcciones
-        % Asume que agregarConexiones y enpilarConexiones manejan la verificación de casillas visitadas
-        casilla_actual.agregarConexiones(nuevas_dir);
-        BEP.enpilarConexiones(casilla_actual);
-    end
+            %else
+            %end
+            
+            casilla_actual.agregarConexiones(nuevas_dir);
+            BEP.enpilarConexiones(casilla_actual);
+        end  
+        lastBack = 0;
+    end    
 end
 
 end
@@ -157,26 +165,47 @@ end
 
 function realizarMovimientoBackTracking(destino)
     %Dependiendo de cual sea el destino, hara un movimiento u otro
+    % hay 8, 4 normales y otros 4 de cuando es final de rama
     direcciones = {'oeste', 'sur', 'este', 'norte'};     
     switch destino
         case direcciones{1}
-            girar(90);
-            girar(90);
-            avanzar();
-            girar(-90);            
-            %despues de avanzar volver a repetir el proceso
+            avanzar();  
+            girar(-90);
         case direcciones{2}
-%             girar(90);
-%             girar(90);
             avanzar();
         case direcciones{3}
-            girar(-90);
             avanzar();
+            girar(90);            
         case direcciones{4}
-%             girar(90);
-%             girar(90);
             avanzar();
     end  
 end
+
+function realizarMovimientoBackTrackingFinRama(destino)
+    %Dependiendo de cual sea el destino, hara un movimiento u otro
+    % hay 8, 4 normales y otros 4 de cuando es final de rama
+    direcciones = {'oeste', 'sur', 'este', 'norte'};     
+    switch destino
+        case direcciones{1}
+            girar(-90);
+            girar(-90);
+            avanzar(); 
+            girar(-90);
+        case direcciones{2}
+            girar(-90);
+            girar(-90);
+            avanzar();
+        case direcciones{3}
+            girar(90);
+            girar(90);
+            avanzar();
+            girar(90);            
+        case direcciones{4}
+            girar(90);
+            girar(90);
+            avanzar();
+    end  
+end
+
 
 
