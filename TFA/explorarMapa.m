@@ -9,11 +9,12 @@ BEP = pila();
 % Añadir direccion disponibles a la pila y crear el objeto casilla
 % donde añadiremos las direcciones disponibles y la informacion de la
 % casilla
+idManager = IDManager();
 casilla_ini = casilla();
 casilla_ini.setVisitada()
 casilla_ini.setEsInicial();
-cod = codificacion_casilla()
-dir = obtenerDireccionesLibres(cod)
+cod = codificacion_casilla();
+dir = obtenerDireccionesLibres(cod);
 casilla_ini.agregarConexiones(dir);
 %Enpilamos esta casilla inicial y sus conexiones
 BEP.enpilar(casilla_ini);
@@ -67,7 +68,7 @@ lastBack = 0;
 % Ejemplo de cómo usar obtenerTop
 while ~BEP.estaVacia()
     % Obtener la casilla en el tope de la pila sin desenpilar
-    casilla_actual = BEP.obtenerTop();
+    casilla_actual = BEP.obtenerTop()
     nuevas_dir = [];
     %Si ya esta visitada, es que estamos realizando backtracking
     if casilla_actual.getVisitada()
@@ -146,7 +147,7 @@ while ~BEP.estaVacia()
 
                 casilla_actual.setEsFinalRama();
 
-                casilla_actual.agregarConexion("norte", casillaSalida)
+                casilla_actual.agregarConexion("norte", casillaSalida);
 %                 BEP.enpilarConexiones(casilla_actual);
             else
                 casilla_actual.agregarConexiones(nuevas_dir);
@@ -239,11 +240,4 @@ function realizarMovimientoBackTrackingFinRama(destino)
             avanzar();
     end  
 end
-
-function id = getNewID()
-    global lastID
-    lastID = lastID + 1;
-    id = lastID;
-end
-
 

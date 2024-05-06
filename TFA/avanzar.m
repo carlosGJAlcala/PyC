@@ -29,7 +29,7 @@ waitfor(r);
 pause(3); %% Esperamos entre 2 y 5 segundos antes de leer el primer mensaje para aseguramos que empiezan a llegar mensajes.
 %% Nos aseguramos recibir un mensaje relacionado con el robot
 while (strcmp(odom.LatestMessage.ChildFrameId,'robot0')~=1)
-    odom.LatestMessage
+    odom.LatestMessage;
 end
 %% Inicializamos variables para el control
 i = 0;
@@ -37,7 +37,11 @@ pos = odom.LatestMessage.Pose.Pose.Position;
 dist = msg_sonar0.Range_;
 distav = 0;
 dist_aux = msg_sonar5.Range_;
+sensorT = 0;
 
+if receive(sonar0).Range_ > 1.5 && receive(sonar5).Range_ < 1.5
+    sensorT = 5;    
+end
 
 lastpos = pos;
 lastdist = dist;
@@ -50,6 +54,12 @@ while (distancia_total < distancia_avanzar && i < MAX_TIME)
     %% Obtenemos la posición y medidas de sonar
     pos=odom.LatestMessage.Pose.Pose.Position;
     msg_sonar0 = receive (sonar0);
+    
+    if sensorT == 5
+        msg_sonar0 = receive(sonar5);
+    end
+
+
     %% Calculamos la distancia avanzada y medimos la distancia a la pared
     if i > 1
         distav = sqrt((pos.X - lastpos.X)^2 + (pos.Y - lastpos.Y)^2);
@@ -86,11 +96,13 @@ while (distancia_total < distancia_avanzar && i < MAX_TIME)
 %         end        
     end
 
-
     %% Aplicamos consignas de control
-
     msg_vel.Linear.X= consigna_vel_linear;
     msg_vel.Angular.Z= consigna_vel_ang;
+    if sensorT == 5 
+        msg_vel.Angular.Z = consigna_vel_ang * -1;
+    end
+    
     % Comando de velocidad
     send(pub,msg_vel);
     lastpos = pos;
