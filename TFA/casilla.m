@@ -3,14 +3,15 @@ classdef casilla < handle
         ID
         Visitada = 0
         Conexiones % Mapa de conexiones con direcciones
-        DireccionDestino
+        DireccionDestino;
         EsSalida = 0;
         EsFinalRama = 0;
         EsInicial = 0;
     end
 
     methods
-        function obj = casilla()
+        function obj = casilla(id_casilla)
+            obj.ID = id_casilla;
             % Inicializar el mapa de conexiones
             obj.Conexiones = containers.Map('KeyType', 'char', 'ValueType', 'any');
             obj.Visitada = 0;
@@ -28,7 +29,7 @@ classdef casilla < handle
 
         function obj = agregarConexiones(obj, direccionesLibres)
             for i = 1:length(direccionesLibres)
-                casilla_hija = casilla();
+                casilla_hija = casilla(IDManager.getNextID());
                 casilla_hija.setDireccionDestino(direccionesLibres{i});
                 obj.Conexiones(direccionesLibres{i}) = casilla_hija;
             end

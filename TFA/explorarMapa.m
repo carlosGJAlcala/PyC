@@ -9,8 +9,8 @@ BEP = pila();
 % Añadir direccion disponibles a la pila y crear el objeto casilla
 % donde añadiremos las direcciones disponibles y la informacion de la
 % casilla
-idManager = IDManager();
-casilla_ini = casilla();
+
+casilla_ini = casilla(IDManager.getNextID());
 casilla_ini.setVisitada()
 casilla_ini.setEsInicial();
 cod = codificacion_casilla();
@@ -140,7 +140,7 @@ while ~BEP.estaVacia()
             end
             
             if comprobarEsSalida == 3 
-                casillaSalida = casilla();
+                casillaSalida = casilla(IDManager.getNextID());
                 casillaSalida.setEsSalida();
                 casillaSalida.setEsFinalRama();
                 casillaSalida.setVisitada();
