@@ -21,15 +21,12 @@ BEP.enpilar(casilla_ini);
 BEP.enpilarConexiones(casilla_ini);
 
 % avanzar hacia la direccion libre fijandonos en el top de la pila
-recorrerMapa(BEP);
+%recorrerMapa(BEP);
 
 
 
+grafo = visualizeCasillaGraph(casilla_ini);
 
-
-
-
-verHijos(casilla_ini);
 
 
 
@@ -40,15 +37,15 @@ end
 % pared derecha
 % pared delantera
 function resultado = obtenerDireccionesLibres(array)
-    direcciones = {'oeste', 'sur', 'este', 'norte'};    
-    % Inicializa un cell array vacío para almacenar las direcciones libres
-    resultado = {};    
-    % Itera a través del array para verificar las paredes libres
-    for i = 1:length(array)
-        if array(i) == 0
-            resultado{end + 1} = direcciones{i};
-        end
+direcciones = {'oeste', 'sur', 'este', 'norte'};
+% Inicializa un cell array vacío para almacenar las direcciones libres
+resultado = {};
+% Itera a través del array para verificar las paredes libres
+for i = 1:length(array)
+    if array(i) == 0
+        resultado{end + 1} = direcciones{i};
     end
+end
 end
 
 
@@ -69,21 +66,22 @@ lastBack = 0;
 while ~BEP.estaVacia()
     % Obtener la casilla en el tope de la pila sin desenpilar
     casilla_actual = BEP.obtenerTop()
+
     nuevas_dir = [];
     %Si ya esta visitada, es que estamos realizando backtracking
     if casilla_actual.getVisitada()
         if casilla_actual.getEsFinalRama()
             destino_back = casilla_actual.getDireccionDestino();
-%             if lastSalida
-%                 realizarMovimientoBackTracking(destino_back);
-%             else
-                realizarMovimientoBackTrackingFinRama(destino_back);
-%             end
+            %             if lastSalida
+            %                 realizarMovimientoBackTracking(destino_back);
+            %             else
+            realizarMovimientoBackTrackingFinRama(destino_back);
+            %             end
 
             %Como es final de rama, prepara backtracking especial solo para
             %este caso
             if ~BEP.estaVacia()
-                BEP.desenpilar();                
+                BEP.desenpilar();
             end
         else
             % recorrer sentido contrario a su destino
@@ -95,9 +93,9 @@ while ~BEP.estaVacia()
             end
 
             if ~BEP.estaVacia()
-                BEP.desenpilar();                
+                BEP.desenpilar();
             end
-            
+
         end
         lastBack = 1;
     else
@@ -138,8 +136,8 @@ while ~BEP.estaVacia()
                     comprobarEsSalida = comprobarEsSalida+1;
                 end
             end
-            
-            if comprobarEsSalida == 3 
+
+            if comprobarEsSalida == 3
                 casillaSalida = casilla(IDManager.getNextID());
                 casillaSalida.setEsSalida();
                 casillaSalida.setEsFinalRama();
@@ -148,96 +146,154 @@ while ~BEP.estaVacia()
                 casilla_actual.setEsFinalRama();
 
                 casilla_actual.agregarConexion("norte", casillaSalida);
-%                 BEP.enpilarConexiones(casilla_actual);
+                % visualizeCasillaGraph(casilla_actual);
+                %                 BEP.enpilarConexiones(casilla_actual);
             else
                 casilla_actual.agregarConexiones(nuevas_dir);
                 BEP.enpilarConexiones(casilla_actual);
-            end           
-        end  
+                %visualizeCasillaGraph(casilla_actual);
+            end
+        end
         lastBack = 0;
-    end    
+    end
 end
 
 end
 
 
 function direccionOpuesta = obtenerDireccionOpuesta(direccion)
-    %Este y Oeste seran opuestos al sur, ya que hacen un giro.
-    switch direccion
-        case 'norte'
-            direccionOpuesta = 'sur';
-        case 'sur'
-            direccionOpuesta = 'norte';
-        case 'este'
-            direccionOpuesta = 'sur';
-        case 'oeste'
-            direccionOpuesta = 'sur';
-        otherwise
-            error('Dirección no reconocida');
-    end
+%Este y Oeste seran opuestos al sur, ya que hacen un giro.
+switch direccion
+    case 'norte'
+        direccionOpuesta = 'sur';
+    case 'sur'
+        direccionOpuesta = 'norte';
+    case 'este'
+        direccionOpuesta = 'sur';
+    case 'oeste'
+        direccionOpuesta = 'sur';
+    otherwise
+        error('Dirección no reconocida');
+end
 end
 
 function realizarMovimiento(destino)
-    %Dependiendo de cual sea el destino, hara un movimiento u otro
-    direcciones = {'oeste', 'sur', 'este', 'norte'};     
-    switch destino
-        case direcciones{1}
-            girar(90);
-            avanzar();
-            %despues de avanzar volver a repetir el proceso
-        case direcciones{2}
-            girar(90);
-            girar(90);
-            avanzar();
-        case direcciones{3}
-            girar(-90);
-            avanzar();
-        case direcciones{4}
-            avanzar();
-    end  
+%Dependiendo de cual sea el destino, hara un movimiento u otro
+direcciones = {'oeste', 'sur', 'este', 'norte'};
+switch destino
+    case direcciones{1}
+        girar(90);
+        avanzar();
+        %despues de avanzar volver a repetir el proceso
+    case direcciones{2}
+        girar(90);
+        girar(90);
+        avanzar();
+    case direcciones{3}
+        girar(-90);
+        avanzar();
+    case direcciones{4}
+        avanzar();
+end
 end
 
 function realizarMovimientoBackTracking(destino)
-    %Dependiendo de cual sea el destino, hara un movimiento u otro
-    % hay 8, 4 normales y otros 4 de cuando es final de rama
-    direcciones = {'oeste', 'sur', 'este', 'norte'};     
-    switch destino
-        case direcciones{1}
-            avanzar();  
-            girar(-90);
-        case direcciones{2}
-            avanzar();
-        case direcciones{3}
-            avanzar();
-            girar(90);            
-        case direcciones{4}
-            avanzar();
-    end  
+%Dependiendo de cual sea el destino, hara un movimiento u otro
+% hay 8, 4 normales y otros 4 de cuando es final de rama
+direcciones = {'oeste', 'sur', 'este', 'norte'};
+switch destino
+    case direcciones{1}
+        avanzar();
+        girar(-90);
+    case direcciones{2}
+        avanzar();
+    case direcciones{3}
+        avanzar();
+        girar(90);
+    case direcciones{4}
+        avanzar();
+end
 end
 
 function realizarMovimientoBackTrackingFinRama(destino)
-    %Dependiendo de cual sea el destino, hara un movimiento u otro
-    % hay 8, 4 normales y otros 4 de cuando es final de rama
-    direcciones = {'oeste', 'sur', 'este', 'norte'};     
-    switch destino
-        case direcciones{1}
-            girar(-90);
-            girar(-90);
-            avanzar(); 
-            girar(-90);
-        case direcciones{2}
-            girar(-90);
-            girar(-90);
-            avanzar();
-        case direcciones{3}
-            girar(90);
-            girar(90);
-            avanzar();
-            girar(90);            
-        case direcciones{4}
-            girar(90);
-            girar(90);
-            avanzar();
-    end  
+%Dependiendo de cual sea el destino, hara un movimiento u otro
+% hay 8, 4 normales y otros 4 de cuando es final de rama
+direcciones = {'oeste', 'sur', 'este', 'norte'};
+switch destino
+    case direcciones{1}
+        girar(-90);
+        girar(-90);
+        avanzar();
+        girar(-90);
+    case direcciones{2}
+        girar(-90);
+        girar(-90);
+        avanzar();
+    case direcciones{3}
+        girar(90);
+        girar(90);
+        avanzar();
+        girar(90);
+    case direcciones{4}
+        girar(90);
+        girar(90);
+        avanzar();
+end
+end
+
+function G = visualizeCasillaGraph(casilla, G, parentNode)
+g_vacio = 0;
+if nargin < 2 || isempty(G)
+    g_vacio = 1;
+    G = digraph;  % Crea un nuevo grafo si no se proporciona uno
+end
+
+% Asegura que el ID de casilla se convierte en cadena para su uso en el grafo
+casillaID = num2str(casilla.getID());
+
+if g_vacio
+    G = addnode(G, casillaID);
+    g_vacio = 0;
+else
+    if isempty(findnode(G, casillaID))
+        G = addnode(G, casillaID);  % Añade el nodo si no está en el grafo
+    end
+end
+% Siempre añade el nodo actual al grafo antes de cualquier otra operación
+
+
+% Añade una arista si existe un nodo padre
+if nargin >= 3 && ~isempty(parentNode)
+    parentID = num2str(parentNode.getID());
+    if isempty(findnode(G, parentID))
+        G = addnode(G, parentID);  % Añade el nodo padre si no está
+    end
+    G = addedge(G, parentID, casillaID);  % Añade la arista
+end
+
+% Recorre todas las conexiones y aplica la función de manera recursiva
+keys = casilla.Conexiones.keys;
+for i = 1:length(keys)
+    direccion = keys{i};
+    childNode = casilla.Conexiones(direccion);
+    G = visualizeCasillaGraph(childNode, G, casilla);  % Llamada recursiva
+end
+
+% Muestra el grafo solo en la llamada más externa
+if nargin < 3
+    figure;
+    p = plot(G, 'Layout', 'force');  % Dibuja el grafo
+
+    % Configuración de la apariencia de los nodos
+    p.MarkerSize = 9;  % Ajusta el tamaño de los nodos
+    p.NodeColor = [0 0.4470 0.7410];  % Color de los nodos
+    p.LineWidth = 2;  % Grosor de las aristas
+    p.EdgeColor = [0.3010 0.7450 0.9330];  % Color de las aristas
+    p.ArrowSize = 12;
+    % Mostrar ID del nodo dentro de los círculos
+    p.NodeLabel = G.Nodes.Name;  % Asume que los nombres de los nodos son los IDs
+
+    title('Visualización del Grafo de Casillas'); % Activa la cuadrícula para mejor orientación espacial end
+end
 end
 

@@ -89,6 +89,11 @@ classdef casilla < handle
         function esInicial = getEsInicial(obj)
             esInicial = obj.EsInicial;
         end 
+
+
+        function id = getID(obj)
+            id = obj.ID;
+        end
     end
 end
 
