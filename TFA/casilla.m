@@ -1,10 +1,12 @@
 classdef casilla < handle
     properties
+        ID
         Visitada = 0
         Conexiones % Mapa de conexiones con direcciones
         DireccionDestino
         EsSalida = 0;
         EsFinalRama = 0;
+        EsInicial = 0;
     end
 
     methods
@@ -15,10 +17,12 @@ classdef casilla < handle
             obj.DireccionDestino = '';
             obj.EsSalida = 0;
             obj.EsFinalRama = 0;
+            obj.EsInicial = 0;
         end
 
         function obj = agregarConexion(obj, direccion, casilla)
             % Añadir una conexión en una dirección específica
+            casilla.setDireccionDestino(direccion);
             obj.Conexiones(direccion) = casilla;
         end
 
@@ -76,6 +80,14 @@ classdef casilla < handle
         function esSalida = getEsFinalRama(obj)
             esSalida = obj.EsFinalRama;
         end
+
+        function setEsInicial(obj)
+            obj.EsInicial = 1;
+        end
+
+        function esInicial = getEsInicial(obj)
+            esInicial = obj.EsInicial;
+        end 
     end
 end
 

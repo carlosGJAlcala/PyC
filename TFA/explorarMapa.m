@@ -11,6 +11,7 @@ BEP = pila();
 % casilla
 casilla_ini = casilla();
 casilla_ini.setVisitada()
+casilla_ini.setEsInicial();
 cod = codificacion_casilla()
 dir = obtenerDireccionesLibres(cod)
 casilla_ini.agregarConexiones(dir);
@@ -62,7 +63,6 @@ end
 
 
 function recorrerMapa(BEP)
-lastSalida = 0;
 lastBack = 0;
 % Ejemplo de cómo usar obtenerTop
 while ~BEP.estaVacia()
@@ -73,7 +73,12 @@ while ~BEP.estaVacia()
     if casilla_actual.getVisitada()
         if casilla_actual.getEsFinalRama()
             destino_back = casilla_actual.getDireccionDestino();
-            realizarMovimientoBackTrackingFinRama(destino_back);
+%             if lastSalida
+%                 realizarMovimientoBackTracking(destino_back);
+%             else
+                realizarMovimientoBackTrackingFinRama(destino_back);
+%             end
+
             %Como es final de rama, prepara backtracking especial solo para
             %este caso
             if ~BEP.estaVacia()
@@ -83,6 +88,11 @@ while ~BEP.estaVacia()
             % recorrer sentido contrario a su destino
             destino_back = casilla_actual.getDireccionDestino();
             realizarMovimientoBackTracking(destino_back);
+            if casilla_actual.getEsInicial()
+                girar(90);
+                girar(90);
+            end
+
             if ~BEP.estaVacia()
                 BEP.desenpilar();                
             end
@@ -90,11 +100,9 @@ while ~BEP.estaVacia()
         end
         lastBack = 1;
     else
-        if lastBack && ~lastSalida
+        if lastBack
             girar(90);
             girar(90);
-            lastBack = 0;
-            lastSalida =0;
         end
 
         % evaluar direccion destino
@@ -131,11 +139,15 @@ while ~BEP.estaVacia()
             end
             
             if comprobarEsSalida == 3 
-                casilla_actual.setEsSalida();
+                casillaSalida = casilla();
+                casillaSalida.setEsSalida();
+                casillaSalida.setEsFinalRama();
+                casillaSalida.setVisitada();
+
                 casilla_actual.setEsFinalRama();
-                casilla_actual.setVisitada();
-                lastSalida = 1;
-                BEP.enpilar(casilla_actual);
+
+                casilla_actual.agregarConexion("norte", casillaSalida)
+%                 BEP.enpilarConexiones(casilla_actual);
             else
                 casilla_actual.agregarConexiones(nuevas_dir);
                 BEP.enpilarConexiones(casilla_actual);
@@ -228,5 +240,10 @@ function realizarMovimientoBackTrackingFinRama(destino)
     end  
 end
 
+function id = getNewID()
+    global lastID
+    lastID = lastID + 1;
+    id = lastID;
+end
 
 

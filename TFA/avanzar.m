@@ -7,10 +7,10 @@ function resultado=avanzar()
 MAX_TIME = 1000; % Numero máximo de iteraciones
 distancia_total = 0; % Variable para acumular la distancia avanzada
 
-distancia_pared = 1;
+distancia_pared = 0.9;
 distancia_avanzar = 2;
-Kp_dist = 1;
-Kp_ori = 0.15;
+Kp_dist = 0.8;
+Kp_ori = 0.2;
 
 %% DECLARACIÓN DE SUBSCRIBERS
 odom = rossubscriber('/robot0/odom'); % Subscripción a la odometría
@@ -78,8 +78,6 @@ while (distancia_total < distancia_avanzar && i < MAX_TIME)
     consigna_vel_linear = 0.3;
     consigna_vel_ang = Kp_dist * Edist + Kp_ori * Eori;
 
-
-
     if dist > 1.5
 %         if dist_aux < 1.5
 %             dist=dist_aux;
@@ -88,7 +86,7 @@ while (distancia_total < distancia_avanzar && i < MAX_TIME)
 %         end        
     end
 
-    
+
     %% Aplicamos consignas de control
 
     msg_vel.Linear.X= consigna_vel_linear;
