@@ -24,9 +24,9 @@ msg_vel=rosmessage(pub); %% Creamos un mensaje del tipo declarado en "pub" (geom
 msg_sonar0=rosmessage(sonar0);
 msg_sonar5= rosmessage(sonar5);
 %% Definimos la periodicidad del bucle (10 hz)
-r = robotics.Rate(10);
+r = robotics.Rate(9);
 waitfor(r);
-pause(3); %% Esperamos entre 2 y 5 segundos antes de leer el primer mensaje para aseguramos que empiezan a llegar mensajes.
+% pause(3); %% Esperamos entre 2 y 5 segundos antes de leer el primer mensaje para aseguramos que empiezan a llegar mensajes.
 %% Nos aseguramos recibir un mensaje relacionado con el robot
 while (strcmp(odom.LatestMessage.ChildFrameId,'robot0')~=1)
     odom.LatestMessage;
@@ -53,12 +53,12 @@ while (distancia_total < distancia_avanzar && i < MAX_TIME)
     i = i + 1;
     %% Obtenemos la posición y medidas de sonar
     pos=odom.LatestMessage.Pose.Pose.Position;
-    msg_sonar0 = receive (sonar0);
-    
+        
     if sensorT == 5
         msg_sonar0 = receive(sonar5);
+    else
+        msg_sonar0 = receive (sonar0);
     end
-
 
     %% Calculamos la distancia avanzada y medimos la distancia a la pared
     if i > 1

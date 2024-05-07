@@ -1,36 +1,108 @@
 function explorarMapa()
 BEP = pila();
 
-
-%Empezamos analizando donde empezamos
-%% Pasos
-% Ini:
-% Analizar que tenemos y hacia donde podemos avanzar
-% Añadir direccion disponibles a la pila y crear el objeto casilla
-% donde añadiremos las direcciones disponibles y la informacion de la
-% casilla
-
 casilla_ini = casilla(IDManager.getNextID());
 casilla_ini.setVisitada()
 casilla_ini.setEsInicial();
 cod = codificacion_casilla();
 dir = obtenerDireccionesLibres(cod);
 casilla_ini.agregarConexiones(dir);
-%Enpilamos esta casilla inicial y sus conexiones
+
 BEP.enpilar(casilla_ini);
 BEP.enpilarConexiones(casilla_ini);
 
-% avanzar hacia la direccion libre fijandonos en el top de la pila
-%recorrerMapa(BEP);
 
-
+recorrerMapa(BEP);
 
 grafo = visualizeCasillaGraph(casilla_ini);
 
+[caminoSalida, direcciones] = buscarSalida(casilla_ini);
 
+% Imprimir el camino y las direcciones
+disp('Camino hacia la salida:');
+disp(caminoSalida);
+disp('Direcciones para seguir:');
+disp(direcciones);
 
+salirMapa(direcciones);
 
 end
+
+function salirMapa(direcciones)
+    for i=1:length(direcciones)
+        realizarMovimiento(direcciones{i}) ;
+    end
+end
+
+function [camino, direccionesArray] = buscarSalida(casillaInicial)
+    % Mapa para controlar las casillas visitadas
+    visitados = containers.Map('KeyType', 'char', 'ValueType', 'logical');
+    % Mapa para registrar el camino de predecesores
+    predecesores = containers.Map('KeyType', 'char', 'ValueType', 'any');
+    % Mapa para guardar las direcciones tomadas para llegar a cada casilla
+    direcciones = containers.Map('KeyType', 'char', 'ValueType', 'char');
+    % Cola de casillas por visitar
+    cola = {casillaInicial};
+    % Marcar la primera casilla como visitada
+    visitados(num2str(casillaInicial.getID())) = true;
+
+    nodoSalida = '';
+    encontrado = false;
+
+    while ~isempty(cola)
+        actual = cola{1};
+        cola(1) = [];  % Desencolar
+
+        % Verificar si la casilla actual es la salida
+        if actual.getEsSalida()
+            nodoSalida = actual;
+            encontrado = true;
+            break;
+        end
+
+        % Revisar todas las conexiones de la casilla actual
+        conexiones = actual.obtenerTodasConexiones();
+        direccionesActuales = keys(conexiones);
+
+        for i = 1:length(direccionesActuales)
+            vecino = conexiones(direccionesActuales{i});
+            idVecino = num2str(vecino.getID());
+
+            % Solo agregar a la cola si no ha sido visitado
+            if ~isKey(visitados, idVecino)
+                visitados(idVecino) = true;
+                cola{end+1} = vecino;
+                predecesores(idVecino) = actual;
+                direcciones(idVecino) = vecino.getDireccionDestino();
+            end
+        end
+    end
+
+    % Reconstruir el camino de regreso si se encontró la salida
+    camino = {};
+    if encontrado
+        while ~isempty(nodoSalida)
+            camino{end+1} = nodoSalida;
+            if isKey(predecesores, num2str(nodoSalida.getID()))
+                nodoSalida = predecesores(num2str(nodoSalida.getID()));
+            else
+                break;
+            end
+        end
+        camino = fliplr(camino);  % Invertir el orden para obtener el camino correcto
+    end
+
+    % Convertir las direcciones a un arreglo
+    direccionesArray = {};
+    for i = 1:length(camino)-1
+        direccionesArray{end+1} = direcciones(num2str(camino{i+1}.getID()));
+    end
+
+    return
+end
+
+
+
 
 % pared izquierda
 % pared trasera
@@ -38,9 +110,7 @@ end
 % pared delantera
 function resultado = obtenerDireccionesLibres(array)
 direcciones = {'oeste', 'sur', 'este', 'norte'};
-% Inicializa un cell array vacío para almacenar las direcciones libres
 resultado = {};
-% Itera a través del array para verificar las paredes libres
 for i = 1:length(array)
     if array(i) == 0
         resultado{end + 1} = direcciones{i};
@@ -49,37 +119,21 @@ end
 end
 
 
-function verHijos(casilla_in)
-claves = keys(casilla_in.obtenerTodasConexiones());  % Obtiene todas las claves del mapa
-valores = values(casilla_in.obtenerTodasConexiones());  % Obtiene todos los valores del mapa
-% Mostrar las claves y los valores
-disp('Conexiones disponibles:');
-for i = 1:length(claves)
-    fprintf('Dirección: %s, Casilla: %s\n', claves{i}, class(valores{i}));
-end
-end
-
-
 function recorrerMapa(BEP)
 lastBack = 0;
-% Ejemplo de cómo usar obtenerTop
-while ~BEP.estaVacia()
-    % Obtener la casilla en el tope de la pila sin desenpilar
-    casilla_actual = BEP.obtenerTop()
 
+while ~BEP.estaVacia()
+
+    casilla_actual = BEP.obtenerTop()
     nuevas_dir = [];
+
     %Si ya esta visitada, es que estamos realizando backtracking
     if casilla_actual.getVisitada()
         if casilla_actual.getEsFinalRama()
             destino_back = casilla_actual.getDireccionDestino();
-            %             if lastSalida
-            %                 realizarMovimientoBackTracking(destino_back);
-            %             else
-            realizarMovimientoBackTrackingFinRama(destino_back);
-            %             end
-
             %Como es final de rama, prepara backtracking especial solo para
-            %este caso
+            realizarMovimientoBackTrackingFinRama(destino_back);
+            
             if ~BEP.estaVacia()
                 BEP.desenpilar();
             end
@@ -87,6 +141,8 @@ while ~BEP.estaVacia()
             % recorrer sentido contrario a su destino
             destino_back = casilla_actual.getDireccionDestino();
             realizarMovimientoBackTracking(destino_back);
+            % Girar 180 cuando llegue al punto inicial para continuar tal y
+            % como se empezo
             if casilla_actual.getEsInicial()
                 girar(90);
                 girar(90);
@@ -99,14 +155,14 @@ while ~BEP.estaVacia()
         end
         lastBack = 1;
     else
+        % En el caso que este haciendo backtracking y vuelva a incoporarse
+        % en el flujo normal
         if lastBack
             girar(90);
             girar(90);
         end
 
-        % evaluar direccion destino
         destino = casilla_actual.getDireccionDestino();
-        %realizar movimiento
         realizarMovimiento(destino);
 
         %% Evaluar nueva casilla
@@ -122,8 +178,7 @@ while ~BEP.estaVacia()
         if isempty(nuevas_dir)
             casilla_actual.setEsFinalRama();
         else
-            %Comprobar si tiene 3 caminos libres, si es asi, esta sera la
-            %salida
+            %Comprobar si tiene 3 caminos libres, excluyendo de donde proviene, si es asi, esta sera la salida
             comprobarEsSalida = 0;
             for i = 1:length(nuevas_dir)
                 if nuevas_dir{i} == "norte"
@@ -145,13 +200,10 @@ while ~BEP.estaVacia()
 
                 casilla_actual.setEsFinalRama();
 
-                casilla_actual.agregarConexion("norte", casillaSalida);
-                % visualizeCasillaGraph(casilla_actual);
-                %                 BEP.enpilarConexiones(casilla_actual);
+                casilla_actual.agregarConexion("salida", casillaSalida);
             else
                 casilla_actual.agregarConexiones(nuevas_dir);
                 BEP.enpilarConexiones(casilla_actual);
-                %visualizeCasillaGraph(casilla_actual);
             end
         end
         lastBack = 0;
@@ -178,13 +230,11 @@ end
 end
 
 function realizarMovimiento(destino)
-%Dependiendo de cual sea el destino, hara un movimiento u otro
-direcciones = {'oeste', 'sur', 'este', 'norte'};
+direcciones = {'oeste', 'sur', 'este', 'norte', 'salida'};
 switch destino
     case direcciones{1}
         girar(90);
         avanzar();
-        %despues de avanzar volver a repetir el proceso
     case direcciones{2}
         girar(90);
         girar(90);
@@ -194,6 +244,8 @@ switch destino
         avanzar();
     case direcciones{4}
         avanzar();
+    case direcciones{5}
+        disp('Ha llegado a la salida');
 end
 end
 
@@ -279,21 +331,32 @@ for i = 1:length(keys)
     G = visualizeCasillaGraph(childNode, G, casilla);  % Llamada recursiva
 end
 
-% Muestra el grafo solo en la llamada más externa
+
 if nargin < 3
     figure;
-    p = plot(G, 'Layout', 'force');  % Dibuja el grafo
-
-    % Configuración de la apariencia de los nodos
-    p.MarkerSize = 9;  % Ajusta el tamaño de los nodos
-    p.NodeColor = [0 0.4470 0.7410];  % Color de los nodos
-    p.LineWidth = 2;  % Grosor de las aristas
-    p.EdgeColor = [0.3010 0.7450 0.9330];  % Color de las aristas
+    p = plot(G, 'Layout', 'force');  
+    p.MarkerSize = 9;  
+    p.NodeColor = [0 0.4470 0.7410]; 
+    p.LineWidth = 2; 
+    p.EdgeColor = [0.3010 0.7450 0.9330];  
     p.ArrowSize = 12;
-    % Mostrar ID del nodo dentro de los círculos
-    p.NodeLabel = G.Nodes.Name;  % Asume que los nombres de los nodos son los IDs
+    p.NodeLabel = G.Nodes.Name;  
 
-    title('Visualización del Grafo de Casillas'); % Activa la cuadrícula para mejor orientación espacial end
+%     salidaID = '';
+%     keys = casilla.Conexiones.keys;
+%     for i = 1:length(keys)
+%         if casilla.Conexiones(keys{i}).getEsSalida()
+%             salidaID = keys{i};
+%             break;
+%         end
+%     end
+% 
+%     if ~isempty(salidaID)
+%         % Resaltar el nodo de salida
+%         highlight(p, salidaID, 'NodeColor', 'red', 'MarkerSize', 10, 'Marker', 's');
+%     end
+
+    title('Visualización del Grafo de Casillas'); 
 end
 end
 
